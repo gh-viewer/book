@@ -122,8 +122,6 @@ When creating the `BrowserWindow`, we set the initial dimensions and some constr
 
 We also need to wait for the `ready` event from the application to create this window, as it won't be possible before this even is fired.
 
-
-
 The build
 
 Back in the root folder, let's create a `webpack.config.js` file with the following contents:
@@ -164,5 +162,7 @@ Most of it is a standard webpack config: provides an entry point and output \(he
 
 You may notice that unlike many usual configurations, we do not exclude the `node_modules` from the JS transformation. This is because React-Native by default compiles the third-party libraries, and therefore plugins authors usually provide sources rather than compiled files. We need to provide the same behavior here.
 
-In this configuration, we are also indicating Electron is the target environment, and the requirement for some 
+In this configuration, we are also indicating Electron is the target environment, and the requirement for some node globals, but the main part that makes building a cross-platform application possible is the `resolve` part of the configuration: in the `alias` section, we are aliasing any import of `react-native` to `react-native-electron`, and we add support for the `.web.js` extension with a higher resolution priority than `.js`, to provide the same behavior the React-Native packager does with `.android.js` and `.ios.js`
+
+
 
