@@ -13,7 +13,7 @@ yarn add electron@~1.6.10 react-dom@~15.4.2 react-native-web@^0.0.95 react-nativ
 We will also need some more tooling in order to run the desktop app, starting by installing the following dependencies:
 
 ```bash
-yarn add --dev babel-loader webpack webpack-dev-server
+yarn add --dev babel-loader babel-regenerator-runtime webpack webpack-dev-server
 ```
 
 ### The UI entry point
@@ -94,8 +94,8 @@ In the `desktop` folder, add a `main.js` file with the following contents:
 
     const createWindow = () => {
       mainWindow = new BrowserWindow({
-        minWidth: 200,
-        minHeight: 400,
+        minWidth: 300,
+        minHeight: 500,
         maxWidth: 400,
         width: 300,
         height: 600,
