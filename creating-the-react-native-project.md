@@ -20,3 +20,9 @@ react-native init --version 0.42.3 AwesomeProject
 
 Then follow the other steps from the guide.
 
+
+
+> TODO: add more documentation about RN setup and add flow
+
+
+

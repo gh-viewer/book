@@ -7,13 +7,13 @@ In order to use the same APIs for desktop as we do for mobile, we will leverage 
 Run the following command to install these dependencies, make sure to specify the same version ranges to make sure there is no incompatibilities in their support:
 
 ```bash
-yarn add electron@~1.6.8 react-dom@~15.4.2 react-native-web@^0.0.94 react-native-electron@^0.0.13
+yarn add electron@~1.6.10 react-dom@~15.4.2 react-native-web@^0.0.95 react-native-electron@^0.0.15
 ```
 
 We will also need some more tooling in order to run the desktop app, starting by installing the following dependencies:
 
 ```bash
-yarn add --dev babel-loader webpack
+yarn add --dev babel-loader webpack webpack-dev-server
 ```
 
 ### The UI entry point
@@ -163,6 +163,4 @@ Most of it is a standard webpack config: provides an entry point and output \(he
 You may notice that unlike many usual configurations, we do not exclude the `node_modules` from the JS transformation. This is because React-Native by default compiles the third-party libraries, and therefore plugins authors usually provide sources rather than compiled files. We need to provide the same behavior here.
 
 In this configuration, we are also indicating Electron is the target environment, and the requirement for some node globals, but the main part that makes building a cross-platform application possible is the `resolve` part of the configuration: in the `alias` section, we are aliasing any import of `react-native` to `react-native-electron`, and we add support for the `.web.js` extension with a higher resolution priority than `.js`, to provide the same behavior the React-Native packager does with `.android.js` and `.ios.js`
-
-
 
