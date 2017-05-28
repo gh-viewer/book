@@ -75,7 +75,7 @@ Create a new `desktop` folder in the root folder, and add an `index.html` file i
   </head>
   <body>
     <div id="root"></div>
-    <script src="dist/bundle.js"></script>
+    <script src="http://localhost:8082/dist/bundle.js"></script>
   </body>
 </html>
 ```
@@ -88,33 +88,35 @@ As you can see it is very simple. We provide a title that Electron will be used 
 
 In the `desktop` folder, add a `main.js` file with the following contents:
 
-    const { app, BrowserWindow } = require('electron')
+```js
+const { app, BrowserWindow } = require('electron')
 
-    let mainWindow = null
+let mainWindow = null
 
-    const createWindow = () => {
-      mainWindow = new BrowserWindow({
-        minWidth: 300,
-        minHeight: 500,
-        maxWidth: 400,
-        width: 300,
-        height: 600,
-        show: false,
-      })
+const createWindow = () => {
+  mainWindow = new BrowserWindow({
+    minWidth: 300,
+    minHeight: 500,
+    maxWidth: 400,
+    width: 300,
+    height: 600,
+    show: false,
+  })
 
-      mainWindow.on('closed', () => {
-        mainWindow = null
-      })
-      mainWindow.once('ready-to-show', () => {
-        mainWindow.show()
-      })
+  mainWindow.on('closed', () => {
+    mainWindow = null
+  })
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show()
+  })
 
-      mainWindow.loadURL(`file://${__dirname}/index.html`)
-    }
+  mainWindow.loadURL(`file://${__dirname}/index.html`)
+}
 
-    app.on('ready', () => {
-      createWindow()
-    })
+app.on('ready', () => {
+  createWindow()
+})
+```
 
 There are a few things going on here, as we need to create the window containing our application and load it, in our case the `index.html` file we previously created. This is done in Electron by creating an instance of `BrowserWindow` and loading the wanted URL for it.
 
@@ -126,11 +128,11 @@ The build
 
 Back in the root folder, let's create a `webpack.config.js` file with the following contents:
 
-```
+```js
 const path = require('path')
 
 module.exports = {
-  entry: './index.web.js',
+  entry: ['babel-regenerator-runtime', './index.web.js'],
   output: {
     path: path.resolve(__dirname, 'desktop', 'dist'),
     filename: 'bundle.js',
@@ -154,6 +156,11 @@ module.exports = {
   node: {
     __filename: true,
     __dirname: true,
+  },
+  devServer: {
+    contentBase: path.resolve(__dirname, 'desktop'),
+    overlay: true,
+    port: 8082,
   },
 }
 ```
