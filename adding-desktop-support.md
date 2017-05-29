@@ -56,9 +56,9 @@ AppRegistry.runApplication('GHViewer', {
 })
 ```
 
-This is essentially the same as what happens in `index.android.js` and `index.ios.js`, with the difference in the last line that we have to run the application indicating the DOM node to render it.
+This is essentially the same as what happens in `index.android.js` and `index.ios.js`, with the difference in the last line that we have to run the application by providing the DOM node to render it.
 
-You may notice that we are loading the `AppRegistry` and other APIs from the react-native library. This is not a mistake, but on the contrary what allows us to create cross-platform components without having to think much about it. We will see later in this page how this is achieved.
+You may notice that we are loading the `AppRegistry` and other APIs from the `react-native` library. This is not a mistake, but on the contrary what allows us to create cross-platform components without having to think much about it. We will see later in this page how this is achieved.
 
 ### The HTML shell
 
@@ -80,7 +80,7 @@ Create a new `desktop` folder in the root folder, and add an `index.html` file i
 </html>
 ```
 
-As you can see it is very simple. We provide a title that Electron will be used for the application title, the `root` div where the React components will be rendered, and a script loading our application.
+As you can see it is very simple. We provide a title that Electron will use for the application title, the `root` div where the React components will be rendered, and a script loading our application from a local server, that we will setup later in this page.
 
 ### The application entry point
 
@@ -120,11 +120,11 @@ app.on('ready', () => {
 
 There are a few things going on here, as we need to create the window containing our application and load it, in our case the `index.html` file we previously created. This is done in Electron by creating an instance of `BrowserWindow` and loading the wanted URL for it.
 
-When creating the `BrowserWindow`, we set the initial dimensions and some constraints as our UI will be mostly vertical to match the mobile experience. Setting the `show` parameter to `false` prevents the window to appear immediately, instead we will wait for it to be ready. This is a good practice to provide a better user experience of not displaying a white screen before the contents are rendered.
+When creating the `BrowserWindow`, we set the initial dimensions and some constraints as our UI will be mostly vertical to match the mobile experience. Setting the `show` parameter to `false` prevents the window from appearing immediately, instead we will wait for the application to be ready. This is a good practice to provide a better user experience of not displaying a white screen before the contents are rendered.
 
-We also need to wait for the `ready` event from the application to create this window, as it won't be possible before this even is fired.
+We also need to wait for the `ready` event from the application to create this window, as it won't be possible before this event is fired.
 
-The build
+### The build configuration
 
 Back in the root folder, let's create a `webpack.config.js` file with the following contents:
 
@@ -165,9 +165,33 @@ module.exports = {
 }
 ```
 
-Most of it is a standard webpack config: provides an entry point and output \(here the `desktop/dist` folder\) and some transformation rules. Here we use babel-loader to transform the JS sources.
+Most of it is a standard webpack configuration: it provides the entry point \(here the `index.web.js` file, with `babel-regenerator-runtime` added to support the `async/await` syntax\) and output \(here the `desktop/dist` folder\) and some transformation rules. Here we use `babel-loader` to transform the JS sources.
 
 You may notice that unlike many usual configurations, we do not exclude the `node_modules` from the JS transformation. This is because React-Native by default compiles the third-party libraries, and therefore plugins authors usually provide sources rather than compiled files. We need to provide the same behavior here.
 
-In this configuration, we are also indicating Electron is the target environment, and the requirement for some node globals, but the main part that makes building a cross-platform application possible is the `resolve` part of the configuration: in the `alias` section, we are aliasing any import of `react-native` to `react-native-electron`, and we add support for the `.web.js` extension with a higher resolution priority than `.js`, to provide the same behavior the React-Native packager does with `.android.js` and `.ios.js`
+In this configuration, we are also indicating Electron is the target environment, and the requirement for some node globals, but the main part that makes building a cross-platform application possible is the `resolve` part of the configuration: in the `alias` section, we are aliasing any import of `react-native` to `react-native-electron`, and we add support for the `.web.js` extension with a higher resolution priority than `.js`, to provide the same behavior the React-Native packager does with `.android.js` and `.ios.js` files.
+
+Finally, we setup the `devServer` configuration to serve the contents dynamically.
+
+### Useful scripts
+
+In the `package.json`, let's add some entries to the `scripts` to support some commands we'll use to compile and run the app:
+
+```js
+"android": "react-native run-android",
+"ios": "react-native run-ios",
+"desktop": "electron ./desktop/main.js",
+"webpack": "webpack --progress",
+"webpack-server": "webpack-dev-server --hot --progress",
+```
+
+You should already have the `start` and `test` scripts added during the React-Native installation.
+
+
+
+Ready to try this out? Run `yarn run webpack-server` in one terminal to start the server that will compile the JavaScript sources for desktop, and run `yarn run desktop` in another terminal to start the Electron process for the application.
+
+If the application window does not open, don't worry it is probably simply waiting for the server to be ready, you can check the progress in the terminal running `webpack-dev-server`, and the application window should appear once it reaches 100%.
+
+
 
