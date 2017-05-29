@@ -1,5 +1,3 @@
-
-
 ## Requesting data using Relay
 
 By now we have an application with a shared UI across platforms, but it's only displaying static contents. Let's add some dynamic data by requesting it from GitHub's GraphQL API.
@@ -178,4 +176,24 @@ There are a few new things introduced here, so let's start from the top of the f
 We then import `graphql` and `QueryRenderer` from `react-relay`. The imported `graphql` function is used by Relay's Babel plugin and compiler to identify and process GraphQL fragments and operations, using [tagged templates literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals). When writing GraphQL query, we must always use it.
 
 The `QueryRenderer` is a React component that handles requesting the data according to the `query` property, and provide the loaded data or request error to the function provided in the `render()` property, using the `environment` created from the `Environment` module.
+
+We also define 3 other components, `QueryError`, `QueryLoader` and `WelcomeScene` that are rendered according to the request state.
+
+There is one last step needed for this code to work: we need to compile the GraphQL query. This may not seem relevant at this point because we're only defining a very simple query, but Relay and its compiler work with the idea of GraphQL fragments defining data requirements collocated to the components displaying their data, and therefore usually split across different files. Relay's compiler processes all these files to find fragments used in queries, so that each query can get all the data needed in a single request. This also has the advantage of validating any GraphQL operation defined in the application at compile time, preventing lots of possible runtime errors.
+
+To compile the GraphQL query, run the script we added at the start of this chapter:
+
+```bash
+yarn run relay-compile
+```
+
+This script will produce a `WelcomeScreenQuery.graphql.js` file in the `src/components/__generated__` folder. Do not alter this file, it is needed by the application.
+
+When working on the application, likely changing files, fragments and queries, it is usually more convenient to have the compiler run automatically every time the files change. This is provided by Relay's compiler CLI using the `--watch` option, that you can simply run from the scripts we previously added using:
+
+```bash
+yarn run relay-watch
+```
+
+
 
