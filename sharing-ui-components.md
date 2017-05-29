@@ -90,7 +90,7 @@ You may see examples inserting styles as plain JS objects in components rather t
 
 The styles we are creating are going to be common to all platforms, but as you can see, we are using `Platform.select()` to alter the scene style on Android and iOS, adding some margin. `Platform.select()` allows us to define styles per platform, supporting keys being `android`, `ios` and `web`. In this case, we are adding a 20px margin on top on iOS to account for the status bar, and use the value of `StatusBar.currentHeight` for Android. For desktop, we don't need to add any margin as there is no status bar, this is also the reason we need to check if the `StatusBar` API is exposed.
 
-The first shared component
+### The first shared component
 
 Now that all the dependencies are in place, let's start using them in our first shared component! Let's create a `WelcomeScene.js` file in `src/components` with the following contents:
 
@@ -148,5 +148,7 @@ AppRegistry.runApplication('GHViewer', {
 })
 ```
 
-That's it! All platforms are now rendering the `WelcomeScene` using shared components and styles!
+Now run `yarn run webpack` to compile the desktop assets. They will be added to the `desktop/dist` folder.
+
+That's it! All platforms are now rendering the `WelcomeScene` using shared components and styles! You can try it out by running `yarn start` + `yarn run android` or `yarn run ios` for mobile, and `yarn run webpack-server` + `yarn run desktop` in your terminal.
 
