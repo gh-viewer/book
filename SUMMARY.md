@@ -6,6 +6,6 @@
 * [Adding desktop support](adding-desktop-support.md)
 * [Sharing UI components](sharing-ui-components.md)
 * [Requesting data](requesting-data.md)
-* State management
-* Adding authentication
+* [Adding authentication](adding-authentication.md)
+* [State management](state-management.md)
 
