@@ -79,6 +79,8 @@ Let's add these libraries to the project:
 yarn add react-redux redux redux-persist
 ```
 
+#### Creating the store
+
 Now let's setup our application store with persistence, by creating a `Store.js` file in the `src` folder, with the following contents:
 
 ```js
@@ -88,12 +90,17 @@ import { AsyncStorage } from 'react-native'
 import { combineReducers, createStore } from 'redux'
 import { createPersistor, getStoredState } from 'redux-persist'
 
-export type ActionType = 'AUTH_INVALID' | 'AUTH_SUCCESS'
-
-export type Action = {
-  type: ActionType,
-  [key: string]: mixed,
-}
+export type Action =
+  | {
+      type: 'AUTH_INVALID',
+    }
+  | {
+      type: 'AUTH_SUCCESS',
+      auth: {
+        access_token: string,
+        scope?: string,
+      },
+    }
 
 const persistConfig = { storage: AsyncStorage }
 
@@ -130,16 +137,53 @@ export const create = async () => {
 }
 ```
 
-> TODO: describe Store logic
+As you can notice, we'll use Flow in this module to define some types. It is convenient when working with Redux to make sure the actions payloads are properly defined and handled.
+
+In order to store the application state, we use use Redux-Persist and configure it to use the `AsyncStorage` API provided by React-Native and React-Native-Web. The `getInitialState()` function will try to get the existing state from storage, or return an empty Object.
+
+The `authReducer()` will handle the authentication actions to update the store, and is part of the main `reducer`. This is not really necessary at this point as we only have one reducer, but namespacing the auth state like this is convenient to avoid more refactoring than necessary once we add more unrelated data to the state.
+
+Finally, this module exports a `create()` function that will create the store using the initial state, and persist it.
 
 > TODO: extract SceneLoader component
+
+#### Providing the state to React components
+
+Before we go into the actual provider implementation, let's extract the `QueryLoader` component we created in the  `WelcomeScene` module into a separate module, as we're going to start using it in more places. Let's create a `SceneLoader.js` file in `src/components`, with the following contents:
+
+```js
+// @flow
+
+import React from 'react'
+import { ActivityIndicator, View } from 'react-native'
+import { Text } from 'react-native-elements'
+
+import { sharedStyles } from './styles'
+
+const SceneLoader = ({ text }: { text?: string }) => (
+  <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
+    <View style={sharedStyles.mainContents}>
+      <ActivityIndicator animating size="large" />
+      <Text h2 style={sharedStyles.textCenter}>{text || 'Loading...'}</Text>
+    </View>
+  </View>
+)
+
+export default SceneLoader
+```
+
+And update WelcomeScene accordingly:
+
+```js
+
+```
 
 > TODO: add StoreProvider component
 
 ### Setting up the app's authentication flow
 
 > TODO: add EnvironmentProvider component
-
+>
 > TODO: setup App component, update entry points
 
 
