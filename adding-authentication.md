@@ -145,8 +145,6 @@ The `authReducer()` will handle the authentication actions to update the store, 
 
 Finally, this module exports a `create()` function that will create the store using the initial state, and persist it.
 
-> TODO: extract SceneLoader component
-
 #### Providing the state to React components
 
 Before we go into the actual provider implementation, let's extract the `QueryLoader` component we created in the  `WelcomeScene` module into a separate module, as we're going to start using it in more places. Let's create a `SceneLoader.js` file in `src/components`, with the following contents:
@@ -160,25 +158,96 @@ import { Text } from 'react-native-elements'
 
 import { sharedStyles } from './styles'
 
-const SceneLoader = ({ text }: { text?: string }) => (
+const SceneLoader = ({ text }: { text?: string }) =>
   <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
     <View style={sharedStyles.mainContents}>
       <ActivityIndicator animating size="large" />
       <Text h2 style={sharedStyles.textCenter}>{text || 'Loading...'}</Text>
     </View>
   </View>
-)
 
 export default SceneLoader
 ```
 
-And update WelcomeScene accordingly:
+And update `WelcomeScene.js` accordingly:
+
+```js
+// @flow
+
+import React from 'react'
+import { View } from 'react-native'
+import { Button, Icon, Text } from 'react-native-elements'
+import { graphql, QueryRenderer } from 'react-relay'
+
+import { create } from '../Environment'
+
+import SceneLoader from './SceneLoader'
+import { sharedStyles } from './styles'
+
+const environment = create()
+
+type QueryErrorProps = {
+  error: Error,
+  retry: () => void,
+}
+const QueryError = ({ error, retry }: QueryErrorProps) =>
+  <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
+    <View style={sharedStyles.mainContents}>
+      <Text h2 style={sharedStyles.textCenter}>
+        {error.message || 'Request error'}
+      </Text>
+    </View>
+    <View style={sharedStyles.bottomContents}>
+      <Button onPress={retry} title="Retry" />
+    </View>
+  </View>
+
+type WelcomeSceneProps = {
+  viewer: {
+    login: string,
+  },
+}
+const WelcomeScene = ({ viewer }: WelcomeSceneProps) =>
+  <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
+    <View style={sharedStyles.mainContents}>
+      <Icon name="octoface" size={60} type="octicon" />
+      <Text h2 style={sharedStyles.textCenter}>
+        Welcome, {viewer.login}!
+      </Text>
+    </View>
+  </View>
+
+const WelcomeSceneRenderer = () =>
+  <QueryRenderer
+    environment={environment}
+    query={graphql`
+      query WelcomeSceneQuery {
+        viewer {
+          login
+        }
+      }
+    `}
+    render={({ error, props, retry }) => {
+      if (error) {
+        return <QueryError error={error} retry={retry} />
+      } else if (props) {
+        return <WelcomeScene {...props} />
+      } else {
+        return <SceneLoader />
+      }
+    }}
+  />
+
+export default WelcomeSceneRenderer
+```
+
+
+
+Now let's create a `StoreProvider.js` file in the `src/component` folder, with the following contents:
 
 ```js
 
 ```
-
-> TODO: add StoreProvider component
 
 ### Setting up the app's authentication flow
 
