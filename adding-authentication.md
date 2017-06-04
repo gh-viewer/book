@@ -241,19 +241,324 @@ const WelcomeSceneRenderer = () =>
 export default WelcomeSceneRenderer
 ```
 
-
-
 Now let's create a `StoreProvider.js` file in the `src/component` folder, with the following contents:
 
 ```js
+// @flow
 
+import React, { Component, type Element } from 'react'
+import { Provider } from 'react-redux'
+
+import { create } from '../Store'
+
+import SceneLoader from './SceneLoader'
+
+export default class StoreProvider extends Component {
+  props: {
+    children?: Element<*>,
+  }
+  state: {
+    store?: Object,
+  } = {}
+
+  componentDidMount() {
+    this.createStore()
+  }
+
+  async createStore() {
+    try {
+      const store = await create()
+      this.setState({ store })
+    } catch (err) {
+      console.warn('Failed to create store', err)
+    }
+  }
+
+  render() {
+    return this.state.store
+      ? <Provider store={this.state.store}>{this.props.children}</Provider>
+      : <SceneLoader />
+  }
+}
 ```
+
+In this module, we use the `Provider` component from React-Redux to inject our application's store. Because creating the store is asynchronous, we display the `SceneLoader` until the store is available.
 
 ### Setting up the app's authentication flow
 
-> TODO: add EnvironmentProvider component
->
-> TODO: setup App component, update entry points
+Now that we have a store to save and retrieve the access token, let's implement the authentication flow in the client, using the server we previously created. To achieve this, we'll create a new file, `EnvironmentProvider.js`, in the `src/components` folder:
+
+```js
+// @flow
+
+import React, { Component, type Element } from 'react'
+import { StyleSheet, View, WebView } from 'react-native'
+import { Button, Text } from 'react-native-elements'
+import { connect } from 'react-redux'
+import type { Environment } from 'relay-runtime'
+import { parse } from 'url'
+
+import { create, EnvironmentPropType } from '../Environment'
+import type { Action } from '../Store'
+
+import SceneLoader from './SceneLoader'
+import { sharedStyles } from './styles'
+
+type AuthState = 'UNAUTHORIZED' | 'LOADING' | 'AUTHORIZE' | 'AUTHORIZED'
+type NavigationState = {
+  loading: boolean,
+  url: string,
+}
+type Props = {
+  access_token: ?string,
+  children: Element<*>,
+  dispatch: (action: Action) => void,
+}
+
+class EnvironmentProvider extends Component {
+  static childContextTypes = {
+    environment: EnvironmentPropType,
+  }
+
+  props: Props
+  state: {
+    auth: AuthState,
+    environment: ?Environment,
+  }
+
+  constructor(props: Props) {
+    super(props)
+    this.state = this.getState(props)
+  }
+
+  getState(props: Props) {
+    return props.access_token
+      ? {
+          auth: 'AUTHORIZED',
+          environment: create(props.access_token, this.onUnauthorized),
+        }
+      : {
+          auth: 'UNAUTHORIZED',
+          environment: null,
+        }
+  }
+
+  getChildContext() {
+    return {
+      environment: this.state.environment,
+    }
+  }
+
+  componentWillReceiveProps(nextProps: Props) {
+    if (nextProps.access_token !== this.props.access_token) {
+      this.setState(this.getState(nextProps))
+    }
+  }
+
+  onUnauthorized = () => {
+    this.props.dispatch({ type: 'AUTH_INVALID' })
+  }
+
+  onNavigationStateChange = (state: NavigationState) => {
+    const { host, pathname, query } = parse(state.url, true)
+    if (host === 'ghviewer.herokuapp.com' && pathname === '/success') {
+      this.props.dispatch({
+        type: 'AUTH_SUCCESS',
+        auth: query,
+      })
+    }
+  }
+
+  onLoadEnd = () => {
+    if (this.state.auth === 'LOADING') {
+      this.setState({ auth: 'AUTHORIZE' })
+    }
+  }
+
+  onPressAuthorize = () => {
+    this.setState({ auth: 'LOADING' })
+  }
+
+  render() {
+    if (this.state.environment) {
+      return this.props.children
+    }
+    const { auth } = this.state
+
+    if (auth === 'UNAUTHORIZED') {
+      return (
+        <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
+          <View style={sharedStyles.mainContents}>
+            <Text h3 style={styles.title}>Welcome to GH Viewer!</Text>
+            <Text style={styles.contents}>
+              In order to use this application, you need to authorize it to
+              access some of your GitHub data
+            </Text>
+            <Button
+              icon={{ name: 'shield', type: 'octicon' }}
+              onPress={this.onPressAuthorize}
+              title="Authorize with GitHub"
+            />
+          </View>
+        </View>
+      )
+    }
+
+    const webView = (
+      <WebView
+        onLoadEnd={this.onLoadEnd}
+        onNavigationStateChange={this.onNavigationStateChange}
+        source={{ uri: 'https://ghviewer.herokuapp.com/authorize' }}
+        style={auth === 'AUTHORIZE' ? sharedStyles.scene : styles.webviewHidden}
+      />
+    )
+    const loader = auth === 'AUTHORIZE' ? null : <SceneLoader />
+
+    return <View style={styles.container}>{webView}{loader}</View>
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  contents: {
+    marginVertical: 15,
+  },
+  title: {
+    textAlign: 'center',
+  },
+  webviewHidden: {
+    height: 0,
+  },
+})
+
+export default connect(state => ({
+  access_token: (state.auth && state.auth.access_token) || null,
+}))(EnvironmentProvider)
+```
+
+This component is responsible for providing the Relay environment to children components, but in order to do so it needs the access token, that will be provided by the store. When the access token is already available, this provider will create the environment and make it available to its children using its context.
+
+When the access token is not available, this component will be responsible for handling the authentication flow, by displaying a [WebView](https://facebook.github.io/react-native/releases/0.42/docs/webview.html) loading the `/authorize` endpoint of our authentication server. The flow is applied as follow:
+
+1. The app is in the `UNAUTHORIZED` state and displays a welcome message to the user, with a button asking to authorize the app with GitHub.
+2. When the user clicks the button, it calls the `onPressAuthorize()` handler, that sets the state to `LOADING`. The component will render the WebView to load the authorization endpoint, and display the `ScreenLoader` until the page is loaded.
+3. Once the page is loaded, the `onLoadEnd()` callback will be triggered, changing the state to `AUTHORIZE`, which will cause the component to hide the loader and display the contents of the WebView, GitHub's authorization page.
+4. The user will then go through GitHub's and our server's authorization flow, that will end-up to being redirected to the `/success` endpoint of our authorization server, with the access token provided in the query params. This state change will be handled by the `onNavigationStateChange()` callback, that will dispatch the `AUTH_SUCCESS` action to our Redux store.
+5. The store will then be able to provide the access token to our component, allowing it to create the Relay environment and render its child component.
 
 
+
+The next step will be to update our `WelcomeScreen.js` file again to use the environment provided rather than create its own, here is its updated code:
+
+```js
+// @flow
+
+import React, { Component } from 'react'
+import { View } from 'react-native'
+import { Button, Icon, Text } from 'react-native-elements'
+import { graphql, QueryRenderer } from 'react-relay'
+
+import { EnvironmentPropType } from '../Environment'
+
+import SceneLoader from './SceneLoader'
+import { sharedStyles } from './styles'
+
+type QueryErrorProps = {
+  error: Error,
+  retry: () => void,
+}
+const QueryError = ({ error, retry }: QueryErrorProps) =>
+  <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
+    <View style={sharedStyles.mainContents}>
+      <Text h2 style={sharedStyles.textCenter}>
+        {error.message || 'Request error'}
+      </Text>
+    </View>
+    <View style={sharedStyles.bottomContents}>
+      <Button onPress={retry} title="Retry" />
+    </View>
+  </View>
+
+type WelcomeSceneProps = {
+  viewer: {
+    login: string,
+  },
+}
+const WelcomeScene = ({ viewer }: WelcomeSceneProps) =>
+  <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
+    <View style={sharedStyles.mainContents}>
+      <Icon name="octoface" size={60} type="octicon" />
+      <Text h2 style={sharedStyles.textCenter}>
+        Welcome, {viewer.login}!
+      </Text>
+    </View>
+  </View>
+
+export default class WelcomeSceneRenderer extends Component {
+  static contextTypes = {
+    environment: EnvironmentPropType.isRequired,
+  }
+
+  render() {
+    return (
+      <QueryRenderer
+        environment={this.context.environment}
+        query={graphql`
+          query WelcomeSceneQuery {
+            viewer {
+              login
+            }
+          }
+        `}
+        render={({ error, props, retry }) => {
+          if (error) {
+            return <QueryError error={error} retry={retry} />
+          } else if (props) {
+            return <WelcomeScene {...props} />
+          } else {
+            return <SceneLoader />
+          }
+        }}
+      />
+    )
+  }
+}
+```
+
+
+
+Now that we have all the pieces, we need to assemble them together, let's create an `App.js` file in `src/components`, with the following contents:
+
+```js
+import React from 'react'
+
+import EnvironmentProvider from './EnvironmentProvider'
+import StoreProvider from './StoreProvider'
+import WelcomeScene from './WelcomeScene'
+
+const App = () =>
+  <StoreProvider>
+    <EnvironmentProvider>
+      <WelcomeScene />
+    </EnvironmentProvider>
+  </StoreProvider>
+
+export default App
+```
+
+The final task is then simply to replace the component import in `index.android.js`, `index.ios.js` and `index.web.js` files from:
+
+```js
+import GHViewer from './src/components/WelcomeScene'
+```
+
+to
+
+```js
+import GHViewer from './src/components/App'
+```
+
+That's finally it for this chapter! The app is now authenticating the user using GitHub and using the access token to make calls to GitHub's API.
 

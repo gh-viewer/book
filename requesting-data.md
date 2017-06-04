@@ -15,7 +15,7 @@ You will be asked for your password, a descriptions of the token \(put anything 
 Now let's add Relay and related tooling to our app:
 
 ```bash
-yarn add react-relay relay-runtime
+yarn add prop-types react-relay relay-runtime
 ```
 
 ```bash
@@ -56,7 +56,10 @@ By now all the tooling should be setup, so let's add Relay to the application co
 First, let's create an `Environment.js` file in the `src` folder, with the following contents:
 
 ```js
+import PropTypes from 'prop-types'
 import { Environment, Network, RecordSource, Store } from 'relay-runtime'
+
+export const EnvironmentPropType = PropTypes.instanceOf(Environment)
 
 export const create = () => {
   const fetchQuery = async (operation, variables) => {

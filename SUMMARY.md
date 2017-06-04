@@ -7,5 +7,5 @@
 * [Sharing UI components](sharing-ui-components.md)
 * [Requesting data](requesting-data.md)
 * [Adding authentication](adding-authentication.md)
-* [State management](state-management.md)
+* [Adding navigation](state-management.md)
 
