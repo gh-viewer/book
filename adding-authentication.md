@@ -76,7 +76,7 @@ To achieve it, we'll use [Redux](http://redux.js.org/) and [Redux Persist](https
 Let's add these libraries to the project:
 
 ```bash
-yarn add react-redux redux redux-persist
+yarn add prop-types react-redux redux redux-persist
 ```
 
 #### Creating the store
@@ -286,7 +286,54 @@ In this module, we use the `Provider` component from React-Redux to inject our a
 
 ### Setting up the app's authentication flow
 
-Now that we have a store to save and retrieve the access token, let's implement the authentication flow in the client, using the server we previously created. To achieve this, we'll create a new file, `EnvironmentProvider.js`, in the `src/components` folder:
+Now that we have a store to save and retrieve the access token, let's implement the authentication flow in the client, using the server we previously created.
+
+> TODO: details on updating the Environment to handle unauthorized error
+
+```js
+// @flow
+
+import PropTypes from 'prop-types'
+import { Environment, Network, RecordSource, Store } from 'relay-runtime'
+
+export type EnvironmentType = Environment
+
+export const EnvironmentPropType = PropTypes.instanceOf(Environment)
+
+export const create = (access_token: string, onUnauthorized: () => void) => {
+  const fetchQuery = (operation: Object, variables?: Object) => {
+    return fetch('https://api.github.com/graphql', {
+      method: 'POST',
+      headers: {
+        authorization: `bearer ${access_token}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: operation.text,
+        variables,
+      }),
+    }).then(res => {
+      if (res.ok) return res.json()
+      else if (res.status === 401) {
+        onUnauthorized()
+      } else {
+        const error: Object = new Error(res.statusText || 'Request error')
+        error.status = res.status
+        throw error
+      }
+    })
+  }
+
+  const network = Network.create(fetchQuery)
+  const source = new RecordSource()
+  const store = new Store(source)
+
+  return new Environment({ network, store })
+}
+
+```
+
+To achieve this, we'll create a new file, `EnvironmentProvider.js`, in the `src/components` folder:
 
 ```js
 // @flow
@@ -448,8 +495,6 @@ When the access token is not available, this component will be responsible for h
 4. The user will then go through GitHub's and our server's authorization flow, that will end-up to being redirected to the `/success` endpoint of our authorization server, with the access token provided in the query params. This state change will be handled by the `onNavigationStateChange()` callback, that will dispatch the `AUTH_SUCCESS` action to our Redux store.
 5. The store will then be able to provide the access token to our component, allowing it to create the Relay environment and render its child component.
 
-
-
 The next step will be to update our `WelcomeScreen.js` file again to use the environment provided rather than create its own, here is its updated code:
 
 ```js
@@ -526,8 +571,6 @@ export default class WelcomeSceneRenderer extends Component {
   }
 }
 ```
-
-
 
 Now that we have all the pieces, we need to assemble them together, let's create an `App.js` file in `src/components`, with the following contents:
 
