@@ -4,7 +4,7 @@ The goal of this chapter is to implement GitHub's OAuth flow in order to get a a
 
 To achieve this, we'll do 3 things: set up an authentication server, implement a way to store the user's access token in the app, and finally implement the full authentication flow in the app.
 
-### Setting up the authorisation server
+### Setting up the authentication server
 
 First, let's setup a server implementing [GitHub's OAuth flow](https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps/#web-application-flow). If you haven't done it already, you'll need to [register your app on GitHub](https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/registering-oauth-apps/). This flow can be implemented by any HTTP server using your language and framework of choice, but in this guide we'll use JavaScript with node.
 
@@ -169,78 +169,6 @@ const SceneLoader = ({ text }: { text?: string }) =>
 export default SceneLoader
 ```
 
-And update `WelcomeScene.js` accordingly:
-
-```js
-// @flow
-
-import React from 'react'
-import { View } from 'react-native'
-import { Button, Icon, Text } from 'react-native-elements'
-import { graphql, QueryRenderer } from 'react-relay'
-
-import { create } from '../Environment'
-
-import SceneLoader from './SceneLoader'
-import { sharedStyles } from './styles'
-
-const environment = create()
-
-type QueryErrorProps = {
-  error: Error,
-  retry: () => void,
-}
-const QueryError = ({ error, retry }: QueryErrorProps) =>
-  <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
-    <View style={sharedStyles.mainContents}>
-      <Text h2 style={sharedStyles.textCenter}>
-        {error.message || 'Request error'}
-      </Text>
-    </View>
-    <View style={sharedStyles.bottomContents}>
-      <Button onPress={retry} title="Retry" />
-    </View>
-  </View>
-
-type WelcomeSceneProps = {
-  viewer: {
-    login: string,
-  },
-}
-const WelcomeScene = ({ viewer }: WelcomeSceneProps) =>
-  <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
-    <View style={sharedStyles.mainContents}>
-      <Icon name="octoface" size={60} type="octicon" />
-      <Text h2 style={sharedStyles.textCenter}>
-        Welcome, {viewer.login}!
-      </Text>
-    </View>
-  </View>
-
-const WelcomeSceneRenderer = () =>
-  <QueryRenderer
-    environment={environment}
-    query={graphql`
-      query WelcomeSceneQuery {
-        viewer {
-          login
-        }
-      }
-    `}
-    render={({ error, props, retry }) => {
-      if (error) {
-        return <QueryError error={error} retry={retry} />
-      } else if (props) {
-        return <WelcomeScene {...props} />
-      } else {
-        return <SceneLoader />
-      }
-    }}
-  />
-
-export default WelcomeSceneRenderer
-```
-
 Now let's create a `StoreProvider.js` file in the `src/component` folder, with the following contents:
 
 ```js
@@ -266,12 +194,7 @@ export default class StoreProvider extends Component {
   }
 
   async createStore() {
-    try {
-      const store = await create()
-      this.setState({ store })
-    } catch (err) {
-      console.warn('Failed to create store', err)
-    }
+    this.setState({ store: await create() })
   }
 
   render() {
@@ -288,15 +211,15 @@ In this module, we use the `Provider` component from React-Redux to inject our a
 
 Now that we have a store to save and retrieve the access token, let's implement the authentication flow in the client, using the server we previously created.
 
-> TODO: details on updating the Environment to handle unauthorized error
+First, let's update the `Environment.js` file to use the access token. We will also provide an `onUnauthorized()` callback in the `create()` function, called when GitHub's API return a response with status `401 Unauthorized`. This will happen if the user decides to remove our app, the access token will no longer be valid.
+
+In this module, we also export an `EnvironmentPropType` that will be used by the components.
 
 ```js
 // @flow
 
 import PropTypes from 'prop-types'
 import { Environment, Network, RecordSource, Store } from 'relay-runtime'
-
-export type EnvironmentType = Environment
 
 export const EnvironmentPropType = PropTypes.instanceOf(Environment)
 
@@ -330,10 +253,9 @@ export const create = (access_token: string, onUnauthorized: () => void) => {
 
   return new Environment({ network, store })
 }
-
 ```
 
-To achieve this, we'll create a new file, `EnvironmentProvider.js`, in the `src/components` folder:
+Now let's create a create a new file, `EnvironmentProvider.js`, in the `src/components` folder:
 
 ```js
 // @flow
@@ -495,7 +417,7 @@ When the access token is not available, this component will be responsible for h
 4. The user will then go through GitHub's and our server's authorization flow, that will end-up to being redirected to the `/success` endpoint of our authorization server, with the access token provided in the query params. This state change will be handled by the `onNavigationStateChange()` callback, that will dispatch the `AUTH_SUCCESS` action to our Redux store.
 5. The store will then be able to provide the access token to our component, allowing it to create the Relay environment and render its child component.
 
-The next step will be to update our `WelcomeScreen.js` file again to use the environment provided rather than create its own, here is its updated code:
+The next step will be to update our `WelcomeScreen.js` file to use the environment provided rather than create its own, and the `SceneLoader` we previous extracted:
 
 ```js
 // @flow
