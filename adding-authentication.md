@@ -147,7 +147,7 @@ Finally, this module exports a `create()` function that will create the store us
 
 #### Providing the state to React components
 
-Before we go into the actual provider implementation, let's extract the `QueryLoader` component we created in the  `WelcomeScene` module into a separate module, as we're going to start using it in more places. Let's create a `SceneLoader.js` file in `src/components`, with the following contents:
+Before we go into the actual provider implementation, let's extract the `QueryLoader` component we created in the  `HomeScreen` module into a separate module, as we're going to start using it in more places. Let's create a `ScreenLoader.js` file in `src/components`, with the following contents:
 
 ```js
 // @flow
@@ -158,7 +158,7 @@ import { Text } from 'react-native-elements'
 
 import { sharedStyles } from './styles'
 
-const SceneLoader = ({ text }: { text?: string }) =>
+const ScreenLoader = ({ text }: { text?: string }) =>
   <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
     <View style={sharedStyles.mainContents}>
       <ActivityIndicator animating size="large" />
@@ -166,7 +166,7 @@ const SceneLoader = ({ text }: { text?: string }) =>
     </View>
   </View>
 
-export default SceneLoader
+export default ScreenLoader
 ```
 
 Now let's create a `StoreProvider.js` file in the `src/component` folder, with the following contents:
@@ -179,7 +179,7 @@ import { Provider } from 'react-redux'
 
 import { create } from '../Store'
 
-import SceneLoader from './SceneLoader'
+import ScreenLoader from './ScreenLoader'
 
 export default class StoreProvider extends Component {
   props: {
@@ -205,7 +205,7 @@ export default class StoreProvider extends Component {
 }
 ```
 
-In this module, we use the `Provider` component from React-Redux to inject our application's store. Because creating the store is asynchronous, we display the `SceneLoader` until the store is available.
+In this module, we use the `Provider` component from React-Redux to inject our application's store. Because creating the store is asynchronous, we display the `ScreenLoader` until the store is available.
 
 ### Setting up the app's authentication flow
 
@@ -270,7 +270,7 @@ import { parse } from 'url'
 import { create, EnvironmentPropType } from '../Environment'
 import type { Action } from '../Store'
 
-import SceneLoader from './SceneLoader'
+import ScreenLoader from './ScreenLoader'
 import { sharedStyles } from './styles'
 
 type AuthState = 'UNAUTHORIZED' | 'LOADING' | 'AUTHORIZE' | 'AUTHORIZED'
@@ -364,6 +364,7 @@ class EnvironmentProvider extends Component {
               access some of your GitHub data
             </Text>
             <Button
+              backgroundColor="#28a745"
               icon={{ name: 'shield', type: 'octicon' }}
               onPress={this.onPressAuthorize}
               title="Authorize with GitHub"
@@ -381,7 +382,7 @@ class EnvironmentProvider extends Component {
         style={auth === 'AUTHORIZE' ? sharedStyles.scene : styles.webviewHidden}
       />
     )
-    const loader = auth === 'AUTHORIZE' ? null : <SceneLoader />
+    const loader = auth === 'AUTHORIZE' ? null : <ScreenLoader />
 
     return <View style={styles.container}>{webView}{loader}</View>
   }
@@ -417,7 +418,7 @@ When the access token is not available, this component will be responsible for h
 4. The user will then go through GitHub's and our server's authorization flow, that will end-up to being redirected to the `/success` endpoint of our authorization server, with the access token provided in the query params. This state change will be handled by the `onNavigationStateChange()` callback, that will dispatch the `AUTH_SUCCESS` action to our Redux store.
 5. The store will then be able to provide the access token to our component, allowing it to create the Relay environment and render its child component.
 
-The next step will be to update our `WelcomeScreen.js` file to use the environment provided rather than create its own, and the `SceneLoader` we previous extracted:
+The next step will be to update our `HomeScreen.js` file to use the environment provided rather than create its own, and the `ScreenLoader` we previous extracted:
 
 ```js
 // @flow
@@ -429,7 +430,7 @@ import { graphql, QueryRenderer } from 'react-relay'
 
 import { EnvironmentPropType } from '../Environment'
 
-import SceneLoader from './SceneLoader'
+import ScreenLoader from './ScreenLoader'
 import { sharedStyles } from './styles'
 
 type QueryErrorProps = {
@@ -448,12 +449,12 @@ const QueryError = ({ error, retry }: QueryErrorProps) =>
     </View>
   </View>
 
-type WelcomeSceneProps = {
+type HomeProps = {
   viewer: {
     login: string,
   },
 }
-const WelcomeScene = ({ viewer }: WelcomeSceneProps) =>
+const Home = ({ viewer }: HomeProps) =>
   <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
     <View style={sharedStyles.mainContents}>
       <Icon name="octoface" size={60} type="octicon" />
@@ -463,7 +464,7 @@ const WelcomeScene = ({ viewer }: WelcomeSceneProps) =>
     </View>
   </View>
 
-export default class WelcomeSceneRenderer extends Component {
+export default class HomeScreen extends Component {
   static contextTypes = {
     environment: EnvironmentPropType.isRequired,
   }
@@ -473,7 +474,7 @@ export default class WelcomeSceneRenderer extends Component {
       <QueryRenderer
         environment={this.context.environment}
         query={graphql`
-          query WelcomeSceneQuery {
+          query HomeScreenQuery {
             viewer {
               login
             }
@@ -483,9 +484,9 @@ export default class WelcomeSceneRenderer extends Component {
           if (error) {
             return <QueryError error={error} retry={retry} />
           } else if (props) {
-            return <WelcomeScene {...props} />
+            return <Home {...props} />
           } else {
-            return <SceneLoader />
+            return <ScreenLoader />
           }
         }}
       />
@@ -501,12 +502,12 @@ import React from 'react'
 
 import EnvironmentProvider from './EnvironmentProvider'
 import StoreProvider from './StoreProvider'
-import WelcomeScene from './WelcomeScene'
+import HomeScreen from './HomeScreen'
 
 const App = () =>
   <StoreProvider>
     <EnvironmentProvider>
-      <WelcomeScene />
+      <HomeScreen />
     </EnvironmentProvider>
   </StoreProvider>
 
@@ -516,7 +517,7 @@ export default App
 The final task is then simply to replace the component import in `index.android.js`, `index.ios.js` and `index.web.js` files from:
 
 ```js
-import GHViewer from './src/components/WelcomeScene'
+import GHViewer from './src/components/HomeScreen'
 ```
 
 to

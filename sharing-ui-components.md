@@ -92,7 +92,7 @@ The styles we are creating are going to be common to all platforms, but as you c
 
 ### The first shared component
 
-Now that all the dependencies are in place, let's start using them in our first shared component! Let's create a `WelcomeScene.js` file in `src/components` with the following contents:
+Now that all the dependencies are in place, let's start using them in our first shared component! Let's create a `HomeScreen.js` file in `src/components` with the following contents:
 
 ```js
 import React, { Component } from 'react'
@@ -101,7 +101,7 @@ import { Icon, Text } from 'react-native-elements'
 
 import { sharedStyles } from './styles'
 
-export default class WelcomeScene extends Component {
+export default class HomeScreen extends Component {
   render() {
     return (
       <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
@@ -120,7 +120,7 @@ Finally, let's edit the `index.android.js` and `index.ios.js` files to have the 
 ```js
 import { AppRegistry } from 'react-native'
 
-import GHViewer from './src/components/WelcomeScene'
+import GHViewer from './src/components/HomeScreen'
 
 AppRegistry.registerComponent('GHViewer', () => GHViewer)
 ```
@@ -131,7 +131,7 @@ and the `index.web.js` file can be simplified the same way:
 import { AppRegistry } from 'react-native'
 import Octicons from 'react-native-vector-icons/Fonts/Octicons.ttf'
 
-import GHViewer from './src/components/WelcomeScene'
+import GHViewer from './src/components/HomeScreen'
 
 const style = document.createElement('style')
 style.type = 'text/css'

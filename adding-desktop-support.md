@@ -146,7 +146,7 @@ module.exports = {
       },
     ],
   },
-  target: 'electron',
+  target: 'electron-renderer',
   resolve: {
     alias: {
       'react-native': 'react-native-electron',
@@ -169,7 +169,7 @@ Most of it is a standard webpack configuration: it provides the entry point \(he
 
 You may notice that unlike many usual configurations, we do not exclude the `node_modules` from the JS transformation. This is because React-Native by default compiles the third-party libraries, and therefore plugins authors usually provide sources rather than compiled files. We need to provide the same behavior here.
 
-In this configuration, we are also indicating Electron is the target environment, and the requirement for some node globals, but the main part that makes building a cross-platform application possible is the `resolve` part of the configuration: in the `alias` section, we are aliasing any import of `react-native` to `react-native-electron`, and we add support for the `.web.js` extension with a higher resolution priority than `.js`, to provide the same behavior the React-Native packager does with `.android.js` and `.ios.js` files.
+In this configuration, we are also indicating the Electron renderer is the target environment, and the requirement for some node globals, but the main part that makes building a cross-platform application possible is the `resolve` part of the configuration: in the `alias` section, we are aliasing any import of `react-native` to `react-native-electron`, and we add support for the `.web.js` extension with a higher resolution priority than `.js`, to provide the same behavior the React-Native packager does with `.android.js` and `.ios.js` files.
 
 Finally, we setup the `devServer` configuration to serve the contents dynamically.
 
@@ -187,11 +187,7 @@ In the `package.json`, let's add some entries to the `scripts` to support some c
 
 You should already have the `start` and `test` scripts added during the React-Native installation.
 
-
-
 Ready to try this out? Run `yarn run webpack-server` in one terminal to start the server that will compile the JavaScript sources for desktop, and run `yarn run desktop` in another terminal to start the Electron process for the application.
 
 If the application window does not open, don't worry it is probably simply waiting for the server to be ready, you can check the progress in the terminal running `webpack-dev-server`, and the application window should appear once it reaches 100%.
-
-
 
