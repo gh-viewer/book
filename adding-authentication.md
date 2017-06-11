@@ -20,7 +20,7 @@ const { parse } = require('url')
 const { CLIENT_ID, CLIENT_SECRET, SCOPE } = process.env
 const AUTH_PARAMS = stringify({
   client_id: CLIENT_ID,
-  scope: SCOPE || '',
+  scope: SCOPE ? SCOPE : 'user:follow read:org',
 })
 const AUTH_URL = `https://github.com/login/oauth/authorize?${AUTH_PARAMS}`
 const TOKEN_URL = 'https://github.com/login/oauth/access_token'
@@ -66,6 +66,23 @@ Let's go through the different sections, first we import the external dependenci
 * `/authorize`: This is the URL that will be loaded by the client, all we need to do is redirect it to GitHub's authorization page with our client ID and optionally a scope, defined by the `AUTH_URL` constant.
 * `/callback`: This is the callback URL that will be called by GitHub after the user successfully authorized our application. It must match the "Authorization callback URL" provided in your GitHub app's settings. This callback will receive a temporary authentication code that must be exchanged for an access token by GitHub's server.
 * `/success`: This is the URL the server will redirect the client to when the access token is retrieved from GitHub's server, and will be provided in the query parameters so that the client can read it and start using it.
+
+
+
+> TODO: deploy to now
+
+```bash
+# Prerequisites
+yarn global add now
+now --login
+# Only needed once
+now secrets add gh-client-id [your client id]
+now secrets add gh-client-secret [your client secret]
+# Deploy when needed
+now PaulLeCam/gh-viewer-server#master -e CLIENT_ID=@gh-client-id -e CLIENT_SECRET=@gh-client-secret -e SCOPE='user:follow read:org' --public
+```
+
+
 
 ### Adding Redux
 
@@ -284,6 +301,8 @@ type Props = {
   dispatch: (action: Action) => void,
 }
 
+const AUTH_SERVER = 'gh-viewer-server-oenpqcxhas.now.sh'
+
 class EnvironmentProvider extends Component {
   static childContextTypes = {
     environment: EnvironmentPropType,
@@ -330,7 +349,12 @@ class EnvironmentProvider extends Component {
 
   onNavigationStateChange = (state: NavigationState) => {
     const { host, pathname, query } = parse(state.url, true)
-    if (host === 'ghviewer.herokuapp.com' && pathname === '/success') {
+    if (
+      host === AUTH_SERVER &&
+      pathname === '/success' &&
+      query &&
+      query.access_token
+    ) {
       this.props.dispatch({
         type: 'AUTH_SUCCESS',
         auth: query,
@@ -378,7 +402,7 @@ class EnvironmentProvider extends Component {
       <WebView
         onLoadEnd={this.onLoadEnd}
         onNavigationStateChange={this.onNavigationStateChange}
-        source={{ uri: 'https://ghviewer.herokuapp.com/authorize' }}
+        source={{ uri: `https://${AUTH_SERVER}/authorize` }}
         style={auth === 'AUTHORIZE' ? sharedStyles.scene : styles.webviewHidden}
       />
     )
