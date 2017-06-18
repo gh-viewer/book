@@ -66,7 +66,7 @@ We are also going to use Relay's `QueryRenderer` component and the loading logic
 import React, { Component, createElement } from 'react'
 import { NetInfo, View } from 'react-native'
 import { Button, Icon, Text } from 'react-native-elements'
-import { graphql, QueryRenderer } from 'react-relay'
+import { QueryRenderer } from 'react-relay'
 
 import { EnvironmentPropType } from '../Environment'
 
@@ -176,8 +176,6 @@ export default class ScreenRenderer extends Component {
 As you can see, we add a bit of logic in the `QueryError` component in order to apply a specific logic when the error is that the query couldn't be fetched. This happens when the app doesn't have network access, so we add a listener that will trigger the query to be retried when the app gets connected. We also display a different UI to the user, without the "retry" button that would fail anyways.
 
 The `ScreenRenderer` in itself simply renders Relay's `QueryRenderer` using the environment it gets from the context, so that components using `ScreenRenderer` don't need to care about it. These components will need to provide the GraphQL `query` and the `container` component to render, as well as the `navigation` if needed by the `container`, and the `variables` used by the `query`.
-
-
 
 Now let's update the `HomeScreen` to use this `ScreenRenderer`:
 
