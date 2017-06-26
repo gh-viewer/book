@@ -7,7 +7,7 @@ First, let's add some dependencies to simplify building our UI. We will use [Rea
 React Native Elements also requires [React Native Vector Icons](https://github.com/oblador/react-native-vector-icons) to display icons, so we will install it as well.
 
 ```bash
-yarn add react-native-elements react-native-vector-icons
+yarn add react-native-elements@^0.13.0 react-native-vector-icons@^4.2.0
 ```
 
 ### Mobile setup
@@ -19,7 +19,7 @@ React Native Vector Icons requires native dependencies and provides fonts that n
 In order to makes these libraries work on desktop, we'll first need to add an extra loader for webpack:
 
 ```bash
-yarn add --dev file-loader
+yarn add --dev file-loader@^0.11.2
 ```
 
 and add it to the `module.rules` array of our webpack.config.js:

@@ -15,11 +15,11 @@ You will be asked for your password, a descriptions of the token \(put anything 
 Now let's add Relay and related tooling to our app:
 
 ```bash
-yarn add react-relay relay-runtime
+yarn add react-relay@^1.1.0 relay-runtime@^1.1.0
 ```
 
 ```bash
-yarn add --dev babel-plugin-relay graphql-fetch-schema relay-compiler
+yarn add --dev babel-plugin-relay@^1.1.0 graphql-fetch-schema@^0.6.0 relay-compiler@^1.1.0
 ```
 
 Also add the following `scripts` to your `package.json`:

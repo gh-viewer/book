@@ -67,8 +67,6 @@ Let's go through the different sections, first we import the external dependenci
 * `/callback`: This is the callback URL that will be called by GitHub after the user successfully authorized our application. It must match the "Authorization callback URL" provided in your GitHub app's settings. This callback will receive a temporary authentication code that must be exchanged for an access token by GitHub's server.
 * `/success`: This is the URL the server will redirect the client to when the access token is retrieved from GitHub's server, and will be provided in the query parameters so that the client can read it and start using it.
 
-
-
 > TODO: deploy to now
 
 ```bash
@@ -82,8 +80,6 @@ now secrets add gh-client-secret [your client secret]
 now PaulLeCam/gh-viewer-server#master -e CLIENT_ID=@gh-client-id -e CLIENT_SECRET=@gh-client-secret -e SCOPE='user:follow read:org' --public
 ```
 
-
-
 ### Adding Redux
 
 Before implementing the authentication flow in the client, we need to implement a way to read and write the access token and possibly other information at will, and to persist it after the user leaves the application to avoid having to go through the flow every time the app is used.
@@ -93,7 +89,7 @@ To achieve it, we'll use [Redux](http://redux.js.org/) and [Redux Persist](https
 Let's add these libraries to the project:
 
 ```bash
-yarn add prop-types react-redux redux redux-persist
+yarn add prop-types@^15.5.10 react-redux@^5.0.5 redux@^3.7.1 redux-persist@^4.8.1
 ```
 
 #### Creating the store
