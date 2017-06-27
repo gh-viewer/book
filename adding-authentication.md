@@ -20,7 +20,7 @@ const { parse } = require('url')
 const { CLIENT_ID, CLIENT_SECRET, SCOPE } = process.env
 const AUTH_PARAMS = stringify({
   client_id: CLIENT_ID,
-  scope: SCOPE ? SCOPE : 'user:follow read:org',
+  scope: SCOPE ? SCOPE : 'public_repo read:org',
 })
 const AUTH_URL = `https://github.com/login/oauth/authorize?${AUTH_PARAMS}`
 const TOKEN_URL = 'https://github.com/login/oauth/access_token'
@@ -77,7 +77,7 @@ now --login
 now secrets add gh-client-id [your client id]
 now secrets add gh-client-secret [your client secret]
 # Deploy when needed
-now PaulLeCam/gh-viewer-server#master -e CLIENT_ID=@gh-client-id -e CLIENT_SECRET=@gh-client-secret -e SCOPE='user:follow read:org' --public
+now PaulLeCam/gh-viewer-server#master -e CLIENT_ID=@gh-client-id -e CLIENT_SECRET=@gh-client-secret -e SCOPE='public_repo read:org' --public
 ```
 
 ### Adding Redux
