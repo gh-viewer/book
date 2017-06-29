@@ -177,13 +177,15 @@ As you can see, we add a bit of logic in the `QueryError` component in order to 
 
 The `ScreenRenderer` in itself simply renders Relay's `QueryRenderer` using the environment it gets from the context, so that components using `ScreenRenderer` don't need to care about it. These components will need to provide the GraphQL `query` and the `container` component to render, as well as the `navigation` if needed by the `container`, and the `variables` used by the `query`.
 
+> TODO: add headerIcon to sharedStyles
+
 Now let's update the `HomeScreen` to use this `ScreenRenderer`:
 
 ```js
 // @flow
 
 import React, { Component } from 'react'
-import { ScrollView, StyleSheet, View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import { Icon, List, ListItem, Text } from 'react-native-elements'
 import { createFragmentContainer, graphql } from 'react-relay'
 
@@ -292,12 +294,6 @@ export default class HomeScreen extends Component {
     )
   }
 }
-
-const styles = StyleSheet.create({
-  itemContainer: {
-    backgroundColor: 'white',
-  },
-})
 ```
 
 Let's go through a few of the changes, starting with the `HomeScreen` component: we add the static `navigationOptions` object with a `title` property, that will be used by the navigation to display the header, and you can notice the `query` provided to `ScreenRenderer` doesn't define all the data requirements itself anymore, but rather use the `HomeScreen viewer` fragment. This is a fundamental concept of Relay: data requirements are collocated to the components needing the data, which make them very easy to maintain. As you can see in this case, the `HomeScreen` query will contain the `HomeScreen viewer` fragment used by the `HomeContainer` component, and this fragment itself will contain the `HomeScreen repository` fragment used by the `RepositoryItem` component. Relay's compiler will resolve all these fragments so that the query satisfies all these data requirements.
@@ -351,7 +347,7 @@ export default class RepositoryScreen extends Component {
         color="white"
         underlayColor="black"
         onPress={() => navigation.goBack()}
-        style={styles.headerIcon}
+        style={sharedStyles.headerIcon}
       />
     ),
     title: navigation.state.params.name,
@@ -379,12 +375,6 @@ export default class RepositoryScreen extends Component {
     )
   }
 }
-
-const styles = StyleSheet.create({
-  headerIcon: {
-    padding: 15,
-  },
-})
 ```
 
 This `RepositoryScreen` is a bit different from the `HomeScreen` because it uses dynamic parameters injected by the navigation: the `title` displayed in the header is the `name` of the repository, and the `query` needs the `id` of the repository node to fetch its data, here injected in the variables.

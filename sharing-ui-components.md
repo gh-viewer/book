@@ -52,7 +52,7 @@ Here we are importing the `Octicons` font file from `react-native-vector-icons/F
 
 We are only importing the `Octicons` font as it is the only one we will be using, but importing other fonts works the same way, and it is possible to import multiple ones, as long as they are properly configured.
 
-Shared styles
+### Shared styles
 
 Let's start our shared UI by defining some common styles that can be used by various components. Let's create a `styles.js` file inside a new `src/components` folder. We will use this `src` folder to put our application code, and the `components` one to defined the React components and associated UI modules, like `styles.js`.
 
@@ -61,6 +61,7 @@ import { Platform, StatusBar, StyleSheet } from 'react-native'
 
 export const sharedStyles = StyleSheet.create({
   scene: {
+    backgroundColor: 'white',
     flex: 1,
     ...Platform.select({
       android: {
