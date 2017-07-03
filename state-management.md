@@ -177,7 +177,14 @@ As you can see, we add a bit of logic in the `QueryError` component in order to 
 
 The `ScreenRenderer` in itself simply renders Relay's `QueryRenderer` using the environment it gets from the context, so that components using `ScreenRenderer` don't need to care about it. These components will need to provide the GraphQL `query` and the `container` component to render, as well as the `navigation` if needed by the `container`, and the `variables` used by the `query`.
 
-> TODO: add headerIcon to sharedStyles
+We'll also update the `styles.js` file to add an extra style we'll use for navigation:
+
+```js
+headerIcon: {
+  paddingHorizontal: 15,
+  paddingVertical: 5,
+},
+```
 
 Now let's update the `HomeScreen` to use this `ScreenRenderer`:
 
@@ -209,7 +216,7 @@ const RepositoryItem = ({ navigation, repository }: RepositoryItemProps) =>
     onPress={() => {
       navigation.navigate('Repository', {
         id: repository.id,
-        name: repository.name,
+        name: repository.nameWithOwner,
       })
     }}
   />
@@ -219,6 +226,7 @@ const RepositoryItemContainer = createFragmentContainer(RepositoryItem, {
     fragment HomeScreen_repository on Repository {
       id
       name
+      nameWithOwner
       owner {
         login
         ...on User {
@@ -271,6 +279,14 @@ const HomeContainer = createFragmentContainer(Home, {
 
 export default class HomeScreen extends Component {
   static navigationOptions = {
+    headerLeft: (
+      <Icon
+        name="repo"
+        type="octicon"
+        color="white"
+        style={sharedStyles.headerIcon}
+      />
+    ),
     title: 'Repositories',
   }
 

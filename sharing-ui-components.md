@@ -22,7 +22,7 @@ In order to makes these libraries work on desktop, we'll first need to add an ex
 yarn add --dev file-loader@^0.11.2
 ```
 
-and add it to the `module.rules` array of our webpack.config.js:
+and add it to the `module.rules` array of our `webpack.config.js`:
 
 ```
 {
@@ -71,6 +71,9 @@ export const sharedStyles = StyleSheet.create({
         marginTop: 20,
       },
     }),
+  },
+  fill: {
+    flex: 1,
   },
   mainContents: {
     padding: 10,
