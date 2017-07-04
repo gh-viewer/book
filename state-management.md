@@ -71,7 +71,7 @@ import { QueryRenderer } from 'react-relay'
 import { EnvironmentPropType } from '../Environment'
 
 import ScreenLoader from './ScreenLoader'
-import { sharedStyles } from './styles'
+import sharedStyles from './styles'
 
 type QueryErrorProps = {
   error: Error,
@@ -197,7 +197,7 @@ import { Icon, List, ListItem, Text } from 'react-native-elements'
 import { createFragmentContainer, graphql } from 'react-relay'
 
 import ScreenRenderer from './ScreenRenderer'
-import { sharedStyles } from './styles'
+import sharedStyles from './styles'
 
 import type { HomeScreen_repository as Repository } from './__generated__/HomeScreen_repository.graphql'
 import type { HomeScreen_viewer as Viewer } from './__generated__/HomeScreen_viewer.graphql'
@@ -327,7 +327,7 @@ import { Icon, Text } from 'react-native-elements'
 import { createFragmentContainer, graphql } from 'react-relay'
 
 import ScreenRenderer from './ScreenRenderer'
-import { sharedStyles } from './styles'
+import sharedStyles from './styles'
 
 import type { RepositoryScreen_repository as RepositoryType } from './__generated__/HomeScreen_viewer.graphql'
 

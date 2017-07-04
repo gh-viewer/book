@@ -248,8 +248,6 @@ const styles = StyleSheet.create({
 
 > TODO: describe usage of ListView \(deprecated\) and createPaginationContainer\(\)
 
-
-
 We are also going to update the `RepositoryScreen.js` file, with the following contents:
 
 ```js

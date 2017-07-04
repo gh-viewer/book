@@ -101,7 +101,7 @@ import { graphql, QueryRenderer } from 'react-relay'
 
 import { create } from '../Environment'
 
-import { sharedStyles } from './styles'
+import sharedStyles from './styles'
 
 const environment = create()
 

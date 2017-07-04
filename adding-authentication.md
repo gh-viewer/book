@@ -169,7 +169,7 @@ import React from 'react'
 import { ActivityIndicator, View } from 'react-native'
 import { Text } from 'react-native-elements'
 
-import { sharedStyles } from './styles'
+import sharedStyles from './styles'
 
 const ScreenLoader = ({ text }: { text?: string }) =>
   <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
@@ -284,7 +284,7 @@ import { create, EnvironmentPropType } from '../Environment'
 import type { Action } from '../Store'
 
 import ScreenLoader from './ScreenLoader'
-import { sharedStyles } from './styles'
+import sharedStyles from './styles'
 
 type AuthState = 'UNAUTHORIZED' | 'LOADING' | 'AUTHORIZE' | 'AUTHORIZED'
 type NavigationState = {
@@ -451,7 +451,7 @@ import { graphql, QueryRenderer } from 'react-relay'
 import { EnvironmentPropType } from '../Environment'
 
 import ScreenLoader from './ScreenLoader'
-import { sharedStyles } from './styles'
+import sharedStyles from './styles'
 
 type QueryErrorProps = {
   error: Error,
