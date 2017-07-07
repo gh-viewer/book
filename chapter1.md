@@ -1,8 +1,8 @@
 # Prerequisites
 
-This guide assumes you are already familiar with JavaScript and front-end development using React.
+This guide assumes you are already familiar with JavaScript and front-end development using [React](https://facebook.github.io/react/).
 
-If you're not already familiar with other libraries of the React ecosystem such as React-Native, Redux and GraphQL/Relay, this guide can eventually serve as an introduction to them but it will focus on using them rather than going deeper into their purpose.
+If you're not already familiar with other libraries of the React ecosystem such as [React-Native](https://facebook.github.io/react-native/), [Redux](http://redux.js.org/) and [GraphQL](http://graphql.org/)/[Relay](https://facebook.github.io/relay/), this guide can eventually serve as an introduction to them but it will focus on using them rather than going deeper into their purpose.
 
 ### Initial setup
 

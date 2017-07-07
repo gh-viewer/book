@@ -33,7 +33,7 @@ and add it to the `module.rules` array of our `webpack.config.js`:
 
 This will allow us to reference binary assets from our JavaScript code.
 
-Now we will need to make the icon font available to our app. To achieve this, add the following code to the index.web.js file:
+We also need to make the icon font available to our app. To achieve this, let's add the following code to the `index.web.js` file:
 
 ```js
 import Octicons from 'react-native-vector-icons/Fonts/Octicons.ttf'
@@ -54,7 +54,7 @@ We are only importing the `Octicons` font as it is the only one we will be using
 
 ### Shared styles
 
-Let's start our shared UI by defining some common styles that can be used by various components. Let's create a `styles.js` file inside a new `src/components` folder. We will use this `src` folder to put our application code, and the `components` one to defined the React components and associated UI modules, like `styles.js`.
+Let's start our shared UI by defining some common styles that can be used by various components. Let's create a `styles.js` file inside a new `src/components` folder. We will use this `src` folder to put our application code, and the `components` one to define the React components and associated UI modules, like `styles.js`.
 
 ```js
 import { Platform, StyleSheet } from 'react-native'
@@ -87,11 +87,11 @@ export default StyleSheet.create({
 })
 ```
 
-Here we are importing 3 modules from React-Native: `Platform`, `StatusBar` and `StyleSheet`. `StyleSheet` allows us to create styles using a similar API to CSS, as presented in [React-Native's documentation](https://facebook.github.io/react-native/releases/0.42/docs/style.html).
+Here we are importing the `Platform` and `StyleSheet` modules from React-Native. `StyleSheet` allows us to create styles using a similar API to CSS, as presented in [React-Native's documentation](https://facebook.github.io/react-native/releases/0.42/docs/style.html).
 
 You may see examples inserting styles as plain JS objects in components rather than rely on styles defined by `StyleSheet`, and it will work as expected, but one major difference is that using `StyleSheet.create()` compiles the styles and sends them to the native side only once, later using references rather than sending the full object, which is more performant. As a good practice, prefer using `StyleSheet` whenever you can.
 
-The styles we are creating are going to be common to all platforms, but as you can see, we are using `Platform.select()` to alter the scene style on Android and iOS, adding some margin. `Platform.select()` allows us to define styles per platform, supporting keys being `android`, `ios` and `web`. In this case, we are adding a 20px margin on top on iOS to account for the status bar. For Android, we don't need to add any margin as the size of the status bar is already taken into account, and desktop doesn't display any status bar.
+The styles we are creating are going to be common to all platforms, but as you can see, we are using `Platform.select()` to make the \`statusBar\` style only defining styles for iOS. `Platform.select()` allows us to define styles per platform, supporting keys being `android`, `ios` and `web`. In this case, we are adding this style on iOS to account for the status bar overlaying our application.
 
 ### The first shared component
 
@@ -153,5 +153,13 @@ AppRegistry.runApplication('GHViewer', {
 
 Now run `yarn run webpack` to compile the desktop assets. They will be added to the `desktop/dist` folder.
 
-That's it! All platforms are now rendering the `WelcomeScene` using shared components and styles! You can try it out by running `yarn start` + `yarn run android` or `yarn run ios` for mobile, and `yarn run webpack-server` + `yarn run desktop` in your terminal.
+That's it! All platforms are now rendering the `HomeScreen` using shared components and styles! You can try it out by running `yarn start` + `yarn run android` or `yarn run ios` for mobile, and `yarn run webpack-server` + `yarn run desktop` in your terminal.
+
+### Related resources
+
+* [Style](http://facebook.github.io/react-native/releases/0.42/docs/style.html) and [layout](http://facebook.github.io/react-native/releases/0.42/docs/flexbox.html) in React-Native
+* [Components provided by React-Native-Elements](https://react-native-training.github.io/react-native-elements/API/HTML_style_headings/)
+* [Icons provided by React-Native-Vector-Icons](https://oblador.github.io/react-native-vector-icons/)
+
+
 

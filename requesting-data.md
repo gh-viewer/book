@@ -1,25 +1,23 @@
 ## Requesting data using Relay
 
-By now we have an application with a shared UI across platforms, but it's only displaying static contents. Let's add some dynamic data by requesting it from GitHub's GraphQL API.
+By now we have an application with a shared UI across platforms, but it's only displaying static contents. Let's add some dynamic data by requesting it from [GitHub's GraphQL API](https://developer.github.com/v4/#github-graphql-api).
 
 ### Getting a personal access token
 
-The first thing we'll need is a personal access token from GitHub. Go to [https://github.com](https://github.com) and authenticate with your account, then in your account menu, open the **Settings** page. In the **Developer settings** section of the sidebar, open the **Personal access tokens** page, then click on the **Generate new token** button.
+The first thing we'll need is a personal access token from GitHub, that you can [get by following GitHub's guide](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/).
 
 You will be asked for your password, a descriptions of the token \(put anything you want there\) and the scopes. There is no need to enable any scope at this stage, you can simply click the **Generate token** button at the end of the form. Your token will now appear in clear. Copy it immediately to a safe place, remember a personal access token is like a password, so do not share it or store it in an insecure location. We will later reference to this token using the `[your personal access token]` placeholder, replace it by your token in these places.
 
-> TODO: add screenshots
-
 ### Adding dependencies
 
-Now let's add Relay and related tooling to our app:
+Now let's add [Relay](https://facebook.github.io/relay/) and related tooling to our app:
 
 ```bash
-yarn add react-relay@^1.1.0 relay-runtime@^1.1.0
+yarn add prop-types@^15.0.0 react-relay@^1.1.0 relay-runtime@^1.1.0
 ```
 
 ```bash
-yarn add --dev babel-plugin-relay@^1.1.0 graphql-fetch-schema@^0.6.0 relay-compiler@^1.1.0
+yarn add --dev babel-plugin-relay@^1.1.0 graphql-fetch-schema@^0.6.1 relay-compiler@^1.1.0
 ```
 
 Also add the following `scripts` to your `package.json`:
@@ -195,6 +193,16 @@ When working on the application, likely changing files, fragments and queries, i
 ```bash
 yarn run relay-watch
 ```
+
+If the compilation succeeded, your application should now be able to perform the query and render the data, try it out!
+
+Remember that **you must not commit your code at this stage, as it contains you personal access token**. The next chapter will refactor this implementation to no longer need it.
+
+### Related resources
+
+* [Introduction to GraphQL](http://graphql.org/learn/) and [Relay tutorial](https://facebook.github.io/relay/docs/tutorial.html)
+* The [GraphiQL IDE](https://github.com/graphql/graphiql) and [GraphiQL app](https://github.com/skevy/graphiql-app)
+* [GitHub's API explorer](https://developer.github.com/v4/explorer/) using GraphiQL
 
 
 

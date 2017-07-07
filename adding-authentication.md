@@ -8,7 +8,9 @@ To achieve this, we'll do 3 things: set up an authentication server, implement a
 
 First, let's setup a server implementing [GitHub's OAuth flow](https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps/#web-application-flow). If you haven't done it already, you'll need to [register your app on GitHub](https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/registering-oauth-apps/). This flow can be implemented by any HTTP server using your language and framework of choice, but in this guide we'll use JavaScript with node.
 
-The authentication server implementation is open-source, [available in this repository](https://github.com/PaulLeCam/gh-viewer-server). If you want to set it up quickly, you can [deploy it to Heroku using this link](https://heroku.com/deploy?template=https://github.com/PaulLeCam/gh-viewer-server), the free plan is enough to support our use case. Here is the server code:
+The authentication server implementation is open-source, [available in this repository](https://github.com/PaulLeCam/gh-viewer-server). If you want to set it up quickly, you can [deploy it to Heroku using this link](https://heroku.com/deploy?template=https://github.com/PaulLeCam/gh-viewer-server), the free plan is enough to support our use case.
+
+Here is the server code:
 
 ```js
 const got = require('got')
@@ -61,7 +63,7 @@ module.exports = async (req, res) => {
 }
 ```
 
-Let's go through the different sections, first we import the external dependencies and built-in node modules. We use [micro](https://github.com/zeit/micro) as it is very simple to setup: we simply need to export a function as the request handler that will support the following paths:
+Let's go through the different sections, first we import the external dependencies and built-in node modules. We use [micro](https://github.com/zeit/micro) as it is very simple to setup: we simply need to export a function as the request handler that will support the following endpoints:
 
 * `/authorize`: This is the URL that will be loaded by the client, all we need to do is redirect it to GitHub's authorization page with our client ID and optionally a scope, defined by the `AUTH_URL` constant.
 * `/callback`: This is the callback URL that will be called by GitHub after the user successfully authorized our application. It must match the "Authorization callback URL" provided in your GitHub app's settings. This callback will receive a temporary authentication code that must be exchanged for an access token by GitHub's server.
@@ -84,12 +86,12 @@ now PaulLeCam/gh-viewer-server#master -e CLIENT_ID=@gh-client-id -e CLIENT_SECRE
 
 Before implementing the authentication flow in the client, we need to implement a way to read and write the access token and possibly other information at will, and to persist it after the user leaves the application to avoid having to go through the flow every time the app is used.
 
-To achieve it, we'll use [Redux](http://redux.js.org/) and [Redux Persist](https://github.com/rt2zz/redux-persist). As with many other library choices in this guide, these choices are out of simplicity because I have already used these libraries before and am familiar with how to implement solutions using them. Depending on you use cases, other libraries, or a custom solution of your choice.
+To achieve it, we'll use [Redux](http://redux.js.org/) and [Redux Persist](https://github.com/rt2zz/redux-persist). As for many other libraries in this guide, these choices are out of simplicity because I have already used these libraries before and am familiar with how to implement solutions using them. Depending on you use cases, other libraries or a custom solution of your choice might offer better solutions.
 
 Let's add these libraries to the project:
 
 ```bash
-yarn add prop-types@^15.5.10 react-redux@^5.0.5 redux@^3.7.1 redux-persist@^4.8.1
+yarn add react-redux@^5.0.5 redux@^3.7.1 redux-persist@^4.8.1
 ```
 
 #### Creating the store
@@ -152,7 +154,7 @@ export const create = async () => {
 
 As you can notice, we'll use Flow in this module to define some types. It is convenient when working with Redux to make sure the actions payloads are properly defined and handled.
 
-In order to store the application state, we use use Redux-Persist and configure it to use the `AsyncStorage` API provided by React-Native and React-Native-Web. The `getInitialState()` function will try to get the existing state from storage, or return an empty Object.
+In order to store the application state, we use Redux-Persist and configure it to use the `AsyncStorage` API provided by React-Native and React-Native-Web. The `getInitialState()` function will try to get the existing state from storage, or return an empty Object.
 
 The `authReducer()` will handle the authentication actions to update the store, and is part of the main `reducer`. This is not really necessary at this point as we only have one reducer, but namespacing the auth state like this is convenient to avoid more refactoring than necessary once we add more unrelated data to the state.
 
