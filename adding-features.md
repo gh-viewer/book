@@ -2,12 +2,6 @@
 
 This is the last chapter of this book, the only one not requiring to add and setup other dependencies, but rather to use some of Relay and React Native features to create a minimum product.
 
-> TODO: use pagination container in HomeScreen
->
-> TODO: use ListView in HomeScreen
->
-> TODO: add mutation to star/unstar in RepositoryScreen
-
 The first thing we're going to do it to add pagination to the `HomeScreen`, in order to load more than 10 repositories. To achieve this, we'll use [the `PaginationContainer` provided by Relay](https://facebook.github.io/relay/docs/pagination-container.html).
 
 Here is the updated `HomeScreen.js` code:
@@ -247,6 +241,16 @@ const styles = StyleSheet.create({
 ```
 
 > TODO: describe usage of ListView \(deprecated\) and createPaginationContainer\(\)
+
+One of the main changes here is the use of [React-Native's ListView](http://facebook.github.io/react-native/releases/0.42/docs/listview.html#listview), which is now deprecated in favor of [VirtualizedList and other list components based on it](http://facebook.github.io/react-native/blog/2017/03/13/better-list-views.html). We are using ListView here because we are using React-Native v0.42, that doesn't contain VirtualizedList.
+
+Among the changes due to using ListView are the use of the [ListView.DataSource](http://facebook.github.io/react-native/releases/0.42/docs/listviewdatasource.html#listviewdatasource) in state, holding the data for each row, and the added `renderRow()` and `renderFooter()` functions provided to the rendered ListView component.
+
+The main other change is the introduction of [Relay's PaginationContainer](https://facebook.github.io/relay/docs/pagination-container.html), that will be used to paginate over the list of repositories. It provides the functions `hasMore()`, `isLoading()` an `loadMore()` in the `relay` prop, that are used in this updated `Home` component to implement the wanted behavior.
+
+
+
+
 
 We are also going to update the `RepositoryScreen.js` file, with the following contents:
 
