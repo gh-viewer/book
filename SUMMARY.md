@@ -9,4 +9,5 @@
 * [Adding authentication](adding-authentication.md)
 * [Adding navigation](state-management.md)
 * [Adding features](adding-features.md)
+* Additional resources
 
