@@ -87,7 +87,7 @@ export default StyleSheet.create({
 })
 ```
 
-Here we are importing the `Platform` and `StyleSheet` modules from React-Native. `StyleSheet` allows us to create styles using a similar API to CSS, as presented in [React-Native's documentation](https://facebook.github.io/react-native/releases/0.42/docs/style.html).
+Here we are importing the `Platform` and `StyleSheet` modules from React-Native. `StyleSheet` allows us to create styles using a similar API to CSS, as presented in [React Native's documentation](https://facebook.github.io/react-native/releases/0.42/docs/style.html).
 
 You may see examples inserting styles as plain JS objects in components rather than rely on styles defined by `StyleSheet`, and it will work as expected, but one major difference is that using `StyleSheet.create()` compiles the styles and sends them to the native side only once, later using references rather than sending the full object, which is more performant. As a good practice, prefer using `StyleSheet` whenever you can.
 
@@ -157,9 +157,9 @@ That's it! All platforms are now rendering the `HomeScreen` using shared compone
 
 ### Related resources
 
-* [Style](http://facebook.github.io/react-native/releases/0.42/docs/style.html) and [layout](http://facebook.github.io/react-native/releases/0.42/docs/flexbox.html) in React-Native
-* [Components provided by React-Native-Elements](https://react-native-training.github.io/react-native-elements/API/HTML_style_headings/)
-* [Icons provided by React-Native-Vector-Icons](https://oblador.github.io/react-native-vector-icons/)
+* [Style](http://facebook.github.io/react-native/releases/0.42/docs/style.html) and [layout](http://facebook.github.io/react-native/releases/0.42/docs/flexbox.html) in React Native
+* [Components provided by React Native Elements](https://react-native-training.github.io/react-native-elements/API/HTML_style_headings/)
+* [Icons provided by React Native Vector Icons](https://oblador.github.io/react-native-vector-icons/)
 
 
 

@@ -154,7 +154,7 @@ export const create = async () => {
 
 As you can notice, we'll use Flow in this module to define some types. It is convenient when working with Redux to make sure the actions payloads are properly defined and handled.
 
-In order to store the application state, we use Redux-Persist and configure it to use the `AsyncStorage` API provided by React-Native and React-Native-Web. The `getInitialState()` function will try to get the existing state from storage, or return an empty Object.
+In order to store the application state, we use Redux-Persist and configure it to use the `AsyncStorage` API provided by React Native and React Native for Web. The `getInitialState()` function will try to get the existing state from storage, or return an empty Object.
 
 The `authReducer()` will handle the authentication actions to update the store, and is part of the main `reducer`. This is not really necessary at this point as we only have one reducer, but namespacing the auth state like this is convenient to avoid more refactoring than necessary once we add more unrelated data to the state.
 
@@ -220,7 +220,7 @@ export default class StoreProvider extends Component {
 }
 ```
 
-In this module, we use the `Provider` component from React-Redux to inject our application's store. Because creating the store is asynchronous, we display the `ScreenLoader` until the store is available.
+In this module, we use the `Provider` component from React Redux to inject our application's store. Because creating the store is asynchronous, we display the `ScreenLoader` until the store is available.
 
 ### Setting up the app's authentication flow
 

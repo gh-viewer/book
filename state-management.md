@@ -1,6 +1,6 @@
 ## Adding navigation
 
-By now we are able to authenticate the user and retrieve her GitHub information, so we can start creating more screens to display the data. First, let's add the React-Navigation library to handle navigation in the app:
+By now we are able to authenticate the user and retrieve her GitHub information, so we can start creating more screens to display the data. First, let's add the [React Navigation](https://reactnavigation.org/) library to handle navigation in the app:
 
 ```bash
 yarn add react-navigation@1.0.0-beta.11
@@ -12,7 +12,7 @@ We will also need to update our `webpack.config.js` file by adding an entry to `
 'react-navigation': 'react-navigation/lib-rn/react-navigation.js',
 ```
 
-We need to create this alias because React-Navigation also has browser support, but in our case we want to use the React-Native APIs.
+We need to create this alias because React Navigation also has browser support, but in our case we want to use the React Native APIs.
 
 Now let's create a `Navigation.js` file in `src/components`, with the following contents:
 

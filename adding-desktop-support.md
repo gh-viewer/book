@@ -2,7 +2,7 @@
 
 Now that the project is setup for Android and iOS thanks to React-Native, we will add desktop support using [Electron](https://electron.atom.io/). If you are not already familiar with Electron, it is a framework for creating Linux, macOS and Windows applications using Web technologies, in our case React.
 
-In order to use the same APIs for desktop as we do for mobile, we will leverage the [React-Native-Web](https://github.com/necolas/react-native-web) library, that provides the same primitives, and [React-Native-Electron](https://github.com/PaulLeCam/react-native-electron), extending React-Native-Web with Electron APIs.
+In order to use the same APIs for desktop as we do for mobile, we will leverage the [React Native for Web](https://github.com/necolas/react-native-web) library, that provides the same primitives, and [React Native Electron](https://github.com/PaulLeCam/react-native-electron), extending React Native for Web with Electron APIs.
 
 Let's start by running the following command to install these dependencies. Other versions than the ones provided below may work as well, but these versions should ensure there are no incompatibilities between these libraries:
 
