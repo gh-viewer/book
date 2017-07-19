@@ -8,9 +8,7 @@ To achieve this, we'll do 3 things: set up an authentication server, implement a
 
 First, let's setup a server implementing [GitHub's OAuth flow](https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/about-authorization-options-for-oauth-apps/#web-application-flow). If you haven't done it already, you'll need to [register your app on GitHub](https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/registering-oauth-apps/). This flow can be implemented by any HTTP server using your language and framework of choice, but in this guide we'll use JavaScript with node.
 
-The authentication server implementation is open-source, [available in this repository](https://github.com/PaulLeCam/gh-viewer-server). If you want to set it up quickly, you can [deploy it to Heroku using this link](https://heroku.com/deploy?template=https://github.com/PaulLeCam/gh-viewer-server), the free plan is enough to support our use case.
-
-Here is the server code:
+The authentication server implementation is open-source, [available in this repository](https://github.com/PaulLeCam/gh-viewer-server). Here is the server code:
 
 ```js
 const got = require('got')
@@ -69,7 +67,9 @@ Let's go through the different sections, first we import the external dependenci
 * `/callback`: This is the callback URL that will be called by GitHub after the user successfully authorized our application. It must match the "Authorization callback URL" provided in your GitHub app's settings. This callback will receive a temporary authentication code that must be exchanged for an access token by GitHub's server.
 * `/success`: This is the URL the server will redirect the client to when the access token is retrieved from GitHub's server, and will be provided in the query parameters so that the client can read it and start using it.
 
-> TODO: deploy to now
+### Deploying the authentication server
+
+Using the following commands, you can easily deploy your own authentication server using [Zeit's now service](https://zeit.co/now).
 
 ```bash
 # Prerequisites
@@ -81,6 +81,8 @@ now secrets add gh-client-secret [your client secret]
 # Deploy when needed
 now PaulLeCam/gh-viewer-server#master -e CLIENT_ID=@gh-client-id -e CLIENT_SECRET=@gh-client-secret -e SCOPE='public_repo' --public
 ```
+
+You can also [deploy it to Heroku using this link](https://heroku.com/deploy?template=https://github.com/PaulLeCam/gh-viewer-server), the free plan is enough to support our use case.
 
 ### Adding Redux
 
@@ -549,4 +551,12 @@ import GHViewer from './src/components/App'
 ```
 
 That's finally it for this chapter! The app is now authenticating the user using GitHub and using the access token to make calls to GitHub's API.
+
+### Related resources
+
+* [Redux' documentation](http://redux.js.org/) - always a great read
+* [Redux Persist](https://github.com/rt2zz/redux-persist)
+* [Setting up GitHub OAuth apps documentation](https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/)
+
+
 

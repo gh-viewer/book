@@ -424,3 +424,10 @@ export default StackNavigator(
 
 That's it for this chapter! We can now list the 10 repositories last updated and navigate to a separate screen to display details about this repository, as we're going to implement in the next chapter.
 
+### Related resources
+
+* [React Navigation](https://reactnavigation.org/)
+* [React Router](https://reacttraining.com/react-router/native/guides/philosophy), an alternative to React Navigation implementing a different approach
+
+
+

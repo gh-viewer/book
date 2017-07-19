@@ -42,7 +42,7 @@ Hopefully by now you have successfully setup your React Native project and are a
 
 * [React-Native documentation](http://facebook.github.io/react-native/)
 * [Create-React-Native-App](https://github.com/react-community/create-react-native-app) - a quick way to get started with React-Native, similar to [Create-React-App](https://github.com/facebookincubator/create-react-app)
-* [Flow](https://flow.org/), [TypeScript](https://www.typescriptlang.org/) and [an interesting article comparing the two on-boarding processes](http://thejameskyle.com/adopting-flow-and-typescript.html)
+* [Flow](https://flow.org/), [TypeScript](https://www.typescriptlang.org/), [an interesting article comparing the two on-boarding processes](http://thejameskyle.com/adopting-flow-and-typescript.html) and [why Reddit chose TypeScript](https://redditblog.com/2017/06/30/why-we-chose-typescript/)
 
 
 
