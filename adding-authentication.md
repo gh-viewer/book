@@ -20,7 +20,7 @@ const { parse } = require('url')
 const { CLIENT_ID, CLIENT_SECRET, SCOPE } = process.env
 const AUTH_PARAMS = stringify({
   client_id: CLIENT_ID,
-  scope: SCOPE ? SCOPE : 'public_repo',
+  scope: SCOPE ? SCOPE : 'public_repo read:org',
 })
 const AUTH_URL = `https://github.com/login/oauth/authorize?${AUTH_PARAMS}`
 const TOKEN_URL = 'https://github.com/login/oauth/access_token'
@@ -79,10 +79,12 @@ now --login
 now secrets add gh-client-id [your client id]
 now secrets add gh-client-secret [your client secret]
 # Deploy when needed
-now PaulLeCam/gh-viewer-server#master -e CLIENT_ID=@gh-client-id -e CLIENT_SECRET=@gh-client-secret -e SCOPE='public_repo' --public
+now gh-viewer/server#master -e CLIENT_ID=@gh-client-id -e CLIENT_SECRET=@gh-client-secret -e SCOPE='public_repo read:org' --public
 ```
 
-You can also [deploy it to Heroku using this link](https://heroku.com/deploy?template=https://github.com/PaulLeCam/gh-viewer-server), the free plan is enough to support our use case.
+You can also [deploy it to Heroku using this link](https://heroku.com/deploy?template=https://github.com/gh-viewer/server), the free plan is enough to support our use case.
+
+If you haven't done it already, don't forget to set the "Authorization callback URL" of your GitHub app's configuration to `https://[your-domain.tld]/callback` so GitHub will properly redirect you app's users once authenticated.
 
 ### Adding Redux
 
@@ -93,7 +95,7 @@ To achieve it, we'll use [Redux](http://redux.js.org/) and [Redux Persist](https
 Let's add these libraries to the project:
 
 ```bash
-yarn add react-redux@^5.0.5 redux@^3.7.1 redux-persist@^4.8.1
+yarn add react-redux@^5.0.5 redux@^3.7.2 redux-persist@^4.8.2
 ```
 
 #### Creating the store
@@ -217,7 +219,7 @@ export default class StoreProvider extends Component {
   render() {
     return this.state.store
       ? <Provider store={this.state.store}>{this.props.children}</Provider>
-      : <SceneLoader />
+      : <ScreenLoader />
   }
 }
 ```
@@ -301,7 +303,8 @@ type Props = {
   dispatch: (action: Action) => void,
 }
 
-const AUTH_SERVER = 'gh-viewer-server-satqkkgicv.now.sh'
+// Edit here if you want to use your own authentication server
+const AUTH_SERVER = 'ghviewer.herokuapp.com'
 
 class EnvironmentProvider extends Component {
   static childContextTypes = {
@@ -408,7 +411,12 @@ class EnvironmentProvider extends Component {
     )
     const loader = auth === 'AUTHORIZE' ? null : <ScreenLoader />
 
-    return <View style={styles.container}>{webView}{loader}</View>
+    return (
+      <View style={styles.container}>
+        {loader}
+        {webView}
+      </View>
+    )
   }
 }
 
@@ -550,7 +558,7 @@ to
 import GHViewer from './src/components/App'
 ```
 
-That's finally it for this chapter! The app is now authenticating the user using GitHub and using the access token to make calls to GitHub's API.
+That's finally it for this chapter! The app is now authenticating the user with GitHub and using the access token to make calls to GitHub's API.
 
 ### Related resources
 

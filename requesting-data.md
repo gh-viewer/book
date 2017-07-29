@@ -14,9 +14,6 @@ Now let's add [Relay](https://facebook.github.io/relay/) and related tooling to 
 
 ```bash
 yarn add prop-types@^15.0.0 react-relay@^1.1.0 relay-runtime@^1.1.0
-```
-
-```bash
 yarn add --dev babel-plugin-relay@^1.1.0 graphql-fetch-schema@^0.6.1 relay-compiler@^1.1.0
 ```
 
@@ -30,7 +27,7 @@ Also add the following `scripts` to your `package.json`:
 
 ### Setting up the tools
 
-Now run:
+Let's run:
 
 ```bash
 ACCESS_TOKEN=[your personal access token] yarn run relay-schema
@@ -159,7 +156,7 @@ const HomeScreen = () => (
       if (error) {
         return <QueryError error={error} retry={retry} />
       } else if (props) {
-        return <HomeScreen {...props} />
+        return <Home {...props} />
       } else {
         return <QueryLoader />
       }

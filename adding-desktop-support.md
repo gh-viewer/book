@@ -21,8 +21,6 @@ yarn add --dev babel-loader@^7.1.1 webpack@^3.4.1 webpack-dev-server@^2.6.1
 Le'ts create an `index.web.js` file in the root folder, with the following contents:
 
 ```js
-// /index.web.js
-
 import React, { Component } from 'react'
 import { AppRegistry, StyleSheet, Text, View } from 'react-native'
 
@@ -93,9 +91,6 @@ In this step, we will implement the script running in the main process, that wil
 In the `desktop` folder, let's add a `main.js` file with the following contents:
 
 ```js
-// /desktop/main.js
-
-
 const { app, BrowserWindow } = require('electron')
 
 let mainWindow = null
@@ -136,8 +131,6 @@ We also need to wait for the `ready` event from the application to create this w
 Back in the root folder, let's create a `webpack.config.js` file with the following contents:
 
 ```js
-// /webpack.config.js
-
 const path = require('path')
 
 module.exports = {
