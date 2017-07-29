@@ -8,7 +8,7 @@ If you're not already familiar with other libraries of the React ecosystem such 
 
 Before starting to create the app, let's make sure you have the basic tooling needed, you will need:
 
-* Your code editor of choice. If you don't know what to use, a few suggestions are [Atom](https://atom.io/), by GitHub, [Nuclide](https://nuclide.io/), built on top of Atom by Facebook, and [Visual Studio Code](https://code.visualstudio.com/), by Microsoft
+* Your code editor of choice. If you don't know what to use, a few suggestions are [Atom](https://atom.io/), by GitHub, [Nuclide](https://nuclide.io/), built on top of Atom by Facebook, and [Visual Studio Code](https://code.visualstudio.com/), by Microsoft.
 * [git](https://git-scm.com/)
 * [node](https://nodejs.org) v7+ \(older versions may work as well, but this guide is made using node 7\)
 * [Yarn](https://yarnpkg.com) \(not mandatory as you can also use [npm](https://www.npmjs.com/), packaged with node, but Yarn is faster and this guide will use it\)

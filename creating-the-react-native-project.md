@@ -4,7 +4,7 @@
 
 The first step in this guide will be to create the React-Native project, following the [steps from the official React Native documentation](https://facebook.github.io/react-native/releases/0.42/docs/getting-started.html).
 
-One important thing that will have to be done differently is to install version 0.42 of React Native rather than the latest one. The reason for this is that starting from version 0.43, React Native uses React 16, but the React Native for Web library that we will also use in this project is only compatible with React 15.
+One important thing that will have to be done differently is to install version 0.42 of React Native rather than the latest one. The reason for this is that starting from version 0.43, React Native uses React 16, but the React Native for Web library that we will also use in this project is only compatible with React 15 at the time of this writing. This is likely to change in the coming weeks or months as [React 16 support in React Native for Web is being worked on](https://github.com/necolas/react-native-web/issues/364).
 
 To create the project using React Native 0.42, replace this command from React-Native's getting started guide:
 
