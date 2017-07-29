@@ -1,19 +1,19 @@
 ## Adding desktop support
 
-Now that the project is setup for Android and iOS thanks to React-Native, we will add desktop support using [Electron](https://electron.atom.io/). If you are not already familiar with Electron, it is a framework for creating Linux, macOS and Windows applications using Web technologies, in our case React.
+Now that the project is setup for Android and iOS thanks to React Native, we will add desktop support using [Electron](https://electron.atom.io/). If you are not already familiar with Electron, it is a framework for creating Linux, macOS and Windows applications using Web technologies, in our case React.
 
 In order to use the same APIs for desktop as we do for mobile, we will leverage the [React Native for Web](https://github.com/necolas/react-native-web) library, that provides the same primitives, and [React Native Electron](https://github.com/PaulLeCam/react-native-electron), extending React Native for Web with Electron APIs.
 
 Let's start by running the following command to install these dependencies. Other versions than the ones provided below may work as well, but these versions should ensure there are no incompatibilities between these libraries:
 
 ```bash
-yarn add babel-regenerator-runtime@^6.5.0 electron@~1.6.11 react-dom@~15.4.2 react-native-web@^0.0.104 react-native-electron@^0.0.16
+yarn add babel-regenerator-runtime@^6.5.0 electron@~1.6.11 react-dom@~15.4.2 react-native-web@^0.0.113 react-native-electron@^0.0.17
 ```
 
 We will also need some more tooling in order to run the desktop app, starting by installing the following dependencies:
 
 ```bash
-yarn add --dev babel-loader@^7.1.0 webpack@^2.6.1 webpack-dev-server@^2.5.0
+yarn add --dev babel-loader@^7.1.1 webpack@^3.4.1 webpack-dev-server@^2.6.1
 ```
 
 ### The UI entry point

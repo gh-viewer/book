@@ -36,7 +36,7 @@ yarn add --dev flow-bin@^0.38.0
 
 Note that we are using version `0.38` here because it is the one supported by React-Native `0.42`.
 
-Hopefully by now you have successfully setup your React Native project and are able to run you app for Android and iOS, so let's move on to the next chapter in order to add desktop support.
+Hopefully by now you have successfully setup your React Native project and are able to run you app for Android and iOS, so let's move on to the next chapter in order to add desktop support .
 
 ### Related resources
 
