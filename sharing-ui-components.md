@@ -7,7 +7,7 @@ First, let's add some dependencies to simplify building our UI. We will use [Rea
 React Native Elements also requires [React Native Vector Icons](https://github.com/oblador/react-native-vector-icons) to display icons, so we will install it as well.
 
 ```bash
-yarn add react-native-elements@^0.13.0 react-native-vector-icons@^4.2.0
+yarn add react-native-elements@^0.15.0 react-native-vector-icons@^4.2.0
 ```
 
 ### Mobile setup
@@ -22,28 +22,35 @@ In order to makes these libraries work on desktop, we'll first need to add an ex
 yarn add --dev file-loader@^0.11.2
 ```
 
-and add it to the `module.rules` array of our `webpack.config.js`:
+and add update the `module.rules` array of our `webpack.config.js` to compile these libraries and add support for binary assets:
 
+```js
+rules: [
+  {
+    test: /\.js$/,
+    exclude: /node_modules\/(?!react-native-(elements|side-menu|tab-navigator|vector-icons)\/).*/,
+    loader: 'babel-loader',
+  },
+  {
+    test: /\.(png|ttf)$/,
+    loader: 'file-loader',
+  },
+],
 ```
-{
-  test: /\.(png|ttf)$/,
-  loader: 'file-loader',
-},
-```
-
-This will allow us to reference binary assets from our JavaScript code.
 
 We also need to make the icon font available to our app. To achieve this, let's add the following code to the `index.web.js` file:
 
 ```js
+// /index.web.js
+
 import Octicons from 'react-native-vector-icons/Fonts/Octicons.ttf'
 
 const style = document.createElement('style')
 style.type = 'text/css'
 style.appendChild(
-  document.createTextNode(`
-    @font-face { src: url(${Octicons}); font-family: "Octicons"; }
-  `),
+  document.createTextNode(
+    `@font-face { src: url(${Octicons}); font-family: "Octicons"; }`,
+  ),
 )
 document.head.appendChild(style)
 ```
@@ -57,15 +64,19 @@ We are only importing the `Octicons` font as it is the only one we will be using
 Let's start our shared UI by defining some common styles that can be used by various components. Let's create a `styles.js` file inside a new `src/components` folder. We will use this `src` folder to put our application code, and the `components` one to define the React components and associated UI modules, like `styles.js`.
 
 ```js
+// /src/components/styles.js
+
 import { Platform, StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
-  statusBar: Platform.select({
-    ios: {
-      backgroundColor: '#24292e',
-      height: 20,
-    },
-  }),
+  statusBar: {
+    ...Platform.select({
+      ios: {
+        backgroundColor: '#24292e',
+        height: 20,
+      },
+    }),
+  },
   scene: {
     backgroundColor: 'white',
     flex: 1,
@@ -98,6 +109,8 @@ The styles we are creating are going to be common to all platforms, but as you c
 Now that all the dependencies are in place, let's start using them in our first shared component! Let's create a `HomeScreen.js` file in `src/components` with the following contents:
 
 ```js
+// /src/components/HomeScreen.js
+
 import React, { Component } from 'react'
 import { View } from 'react-native'
 import { Icon, Text } from 'react-native-elements'
@@ -121,6 +134,8 @@ export default class HomeScreen extends Component {
 Finally, let's edit the `index.android.js` and `index.ios.js` files to have the following contents:
 
 ```js
+// /index.android.js and /index.ios.js
+
 import { AppRegistry } from 'react-native'
 
 import GHViewer from './src/components/HomeScreen'
@@ -131,6 +146,8 @@ AppRegistry.registerComponent('GHViewer', () => GHViewer)
 and the `index.web.js` file can be simplified the same way:
 
 ```js
+// /index.web.js
+
 import { AppRegistry } from 'react-native'
 import Octicons from 'react-native-vector-icons/Fonts/Octicons.ttf'
 
@@ -139,9 +156,9 @@ import GHViewer from './src/components/HomeScreen'
 const style = document.createElement('style')
 style.type = 'text/css'
 style.appendChild(
-  document.createTextNode(`
-    @font-face { src: url(${Octicons}); font-family: "Octicons"; }
-  `),
+  document.createTextNode(
+    `@font-face { src: url(${Octicons}); font-family: "Octicons"; }`
+  ),
 )
 document.head.appendChild(style)
 

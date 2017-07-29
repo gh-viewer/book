@@ -21,6 +21,8 @@ yarn add --dev babel-loader@^7.1.1 webpack@^3.4.1 webpack-dev-server@^2.6.1
 Le'ts create an `index.web.js` file in the root folder, with the following contents:
 
 ```js
+// /index.web.js
+
 import React, { Component } from 'react'
 import { AppRegistry, StyleSheet, Text, View } from 'react-native'
 
@@ -91,6 +93,9 @@ In this step, we will implement the script running in the main process, that wil
 In the `desktop` folder, let's add a `main.js` file with the following contents:
 
 ```js
+// /desktop/main.js
+
+
 const { app, BrowserWindow } = require('electron')
 
 let mainWindow = null
@@ -131,12 +136,14 @@ We also need to wait for the `ready` event from the application to create this w
 Back in the root folder, let's create a `webpack.config.js` file with the following contents:
 
 ```js
+// /webpack.config.js
+
 const path = require('path')
 
 module.exports = {
   entry: ['babel-regenerator-runtime', './index.web.js'],
   output: {
-    path: path.resolve(__dirname, 'desktop', 'dist'),
+    path: path.join(__dirname, 'desktop', 'dist'),
     filename: 'bundle.js',
     publicPath: 'dist/',
   },
@@ -144,6 +151,7 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
+        exclude: /node_modules/,
         loader: 'babel-loader',
       },
     ],
@@ -160,7 +168,7 @@ module.exports = {
     __dirname: true,
   },
   devServer: {
-    contentBase: path.resolve(__dirname, 'desktop'),
+    contentBase: path.join(__dirname, 'desktop'),
     overlay: true,
     port: 8082,
   },
@@ -169,7 +177,7 @@ module.exports = {
 
 Most of it is a standard [webpack](https://webpack.js.org/) configuration: it provides the entry point \(here the `index.web.js` file, with `babel-regenerator-runtime` added to support the `async/await` syntax\) and output \(here the `desktop/dist` folder\) and some transformation rules. Here we use `babel-loader` to transform the JS sources.
 
-You may notice that unlike many usual configurations, we do not exclude the `node_modules` from the JS transformation. This is because React-Native by default compiles the third-party libraries, and therefore plugins authors usually provide sources rather than compiled files, so we need to provide the same behavior here. A better option to make the build faster would be to only include the third-party libraries that need to be compiled, but out of simplicity in this guide all libraries will be processed by Babel.
+You may notice that like many usual configurations, we exclude the `node_modules` from the JS transformation. In the next chapter, we will have to change this because React-Native by default compiles the third-party libraries, and therefore plugins authors usually provide sources rather than compiled files, so we will need to provide the same behavior here.
 
 In this configuration, we are also indicating the Electron renderer is the target environment, and the requirement for some node globals, but the main part that makes building a cross-platform application possible is the `resolve` option the configuration: in the `alias` section, we are aliasing any import of `react-native` to `react-native-electron`, and we add support for the `.web.js` extension with a higher resolution priority than `.js`, to provide the same behavior the React-Native packager does with `.android.js` and `.ios.js` files.
 
