@@ -6,13 +6,21 @@ By now we are able to authenticate the user and retrieve her GitHub information,
 yarn add react-navigation@1.0.0-beta.11
 ```
 
-We will also need to update our `webpack.config.js` file by adding an entry to `resolve.alias`, as we previously did to alias `react-native` to `react-native-electron` for the desktop app:
+We will need to update our `webpack.config.js` file again by adding an entry to `resolve.alias`, as we previously did to alias `react-native` to `react-native-electron` for the desktop app:
 
 ```js
 'react-navigation': 'react-navigation/lib-rn/react-navigation.js',
 ```
 
-We need to create this alias because React Navigation also has browser support, but in our case we want to use the React Native APIs.
+We need to create this alias because React Navigation also has browser support, but in our case we want to use the React Native APIs, so we also need to update the `module.rules` to compile it using Babel:
+
+```js
+{
+  test: /\.js$/,
+  exclude: /node_modules\/(?!react-native-(elements|side-menu|tab-navigator|tab-view|vector-icons)|react-navigation\/).*/,
+  loader: 'babel-loader',
+},
+```
 
 Now let's create a `Navigation.js` file in `src/components`, with the following contents:
 
@@ -209,7 +217,6 @@ type RepositoryItemProps = {
 
 const RepositoryItem = ({ navigation, repository }: RepositoryItemProps) =>
   <ListItem
-    containerStyle={styles.itemContainer}
     title={repository.name}
     subtitle={repository.owner.isViewer ? null : repository.owner.login}
     rightIcon={{ name: 'chevron-right', type: 'octicon' }}
@@ -314,8 +321,6 @@ export default class HomeScreen extends Component {
 
 Let's go through a few of the changes, starting with the `HomeScreen` component: we add the static `navigationOptions` object with a `title` property, that will be used by the navigation to display the header, and you can notice the `query` provided to `ScreenRenderer` doesn't define all the data requirements itself anymore, but rather use the `HomeScreen viewer` fragment. This is a fundamental concept of Relay: data requirements are collocated to the components needing the data, which make them very easy to maintain. As you can see in this case, the `HomeScreen` query will contain the `HomeScreen viewer` fragment used by the `HomeContainer` component, and this fragment itself will contain the `HomeScreen repository` fragment used by the `RepositoryItem` component. Relay's compiler will resolve all these fragments so that the query satisfies all these data requirements.
 
-> TODO: run Relay compiler
-
 The `RepositoryItem` has an `onPress` handler that will cause the app to navigate to the `Repository` screen, providing the repository's `id` and `name` values, that we will now use by creating the `RepositoryScreen.js` file in `src/components`, with the following contents:
 
 ```js
@@ -394,6 +399,8 @@ export default class RepositoryScreen extends Component {
 ```
 
 This `RepositoryScreen` is a bit different from the `HomeScreen` because it uses dynamic parameters injected by the navigation: the `title` displayed in the header is the `name` of the repository, and the `query` needs the `id` of the repository node to fetch its data, here injected in the variables.
+
+If you are not already running the Relay compiler in watch mode \(using `yarn run relay-watch`\) now is a good time to run it once to update the generated files, using `yarn run relay-compile`.
 
 Last step is simply to add this screen to the `Navigation.js` file, the same way it already supports the `HomeScreen`:
 

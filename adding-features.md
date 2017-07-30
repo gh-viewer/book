@@ -246,8 +246,6 @@ Among the changes due to using ListView are the use of the [ListView.DataSource]
 
 The main other change is the introduction of [Relay's PaginationContainer](https://facebook.github.io/relay/docs/pagination-container.html), that will be used to paginate over the list of repositories. It provides the functions `hasMore()`, `isLoading()` an `loadMore()` in the `relay` prop, that are used in this updated `Home` component to implement the wanted behavior in the `onPressLoadMore()` and `renderFooter()` methods.
 
-
-
 We are also going to update the `RepositoryScreen.js` file, with the following contents:
 
 ```js
@@ -495,13 +493,9 @@ Beyond displaying more information, the main change in this module is the introd
 
 Both of these mutations are used conditionally in the `onPressStar()` method in order to toggle starring the repository for the user, using Relay's `commitMutation()`. By implementing an [optimistic response](https://facebook.github.io/relay/docs/mutations.html#updating-the-client-optimistically), we can ensure the UI is updated immediately by Relay using the payload provided.
 
-
-
 That's it for this last chapter! This is still far from a full-feature app, but hopefully a good starting point to implement more of GitHub's APIs as you want!
 
 Don't hesitate to check the additional resources page to discover complementary libraries to build this kind of project.
-
-
 
 ### Related resources
 
