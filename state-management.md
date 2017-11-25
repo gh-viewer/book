@@ -333,17 +333,15 @@ import sharedStyles from './styles'
 
 import type { RepositoryScreen_repository as RepositoryType } from './__generated__/HomeScreen_viewer.graphql'
 
-const Repository = ({ repository }: { repository: RepositoryType }) => {
-  return (
-    <ScrollView style={sharedStyles.scene}>
-      <View style={sharedStyles.mainContents}>
-        <Text>
-          Repository screen: {repository.owner.login}/{repository.name}
-        </Text>
-      </View>
-    </ScrollView>
-  )
-}
+const Repository = ({ repository }: { repository: RepositoryType }) => (
+  <ScrollView style={sharedStyles.scene}>
+    <View style={sharedStyles.mainContents}>
+      <Text>
+        Repository screen: {repository.owner.login}/{repository.name}
+      </Text>
+    </View>
+  </ScrollView>
+)
 
 const RepositoryContainer = createFragmentContainer(Repository, {
   repository: graphql`
@@ -359,14 +357,16 @@ const RepositoryContainer = createFragmentContainer(Repository, {
 export default class RepositoryScreen extends Component {
   static navigationOptions = ({ navigation }: Object) => ({
     headerLeft: (
-      <Icon
-        name="chevron-left"
-        type="octicon"
-        color="white"
-        underlayColor="black"
-        onPress={() => navigation.goBack()}
-        style={sharedStyles.headerIcon}
-      />
+      <View style={sharedStyles.headerLeft}>
+        <Icon
+          name="chevron-left"
+          type="octicon"
+          color="white"
+          underlayColor="black"
+          onPress={() => navigation.goBack()}
+          style={sharedStyles.headerIcon}
+        />
+      </View>
     ),
     title: navigation.state.params.name,
   })
