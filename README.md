@@ -12,13 +12,18 @@ Most of the libraries presented in this guide are chosen either because these ar
 
 Many of these technologies are recent and while they provide a great developer experience and allow to iterate quickly, they also have drawbacks that need to be understood. Just because it is possible to build cross-platform applications like this doesn't mean it is the most appropriate in all cases. As always, it depends on your needs.
 
-### Contributions
+## Contributions
 
 Please contribute! Whether it is to make the code better, fix some grammar or typos or make some explanations clearer, there is no small contribution!
 
 To make changes to this book, please open a [change request on GitBook](https://www.gitbook.com/book/gh-viewer/creating-a-cross-platform-app-using-react/changes). If you are making changes to the code, please also open a pull request in [the relevant GitHub repository](https://github.com/gh-viewer).
 
 All contributions must be made using the license already used \(CC BY-NC-SA 4.0 for the book contents and MIT for the code\).
+
+## History
+
+* 2017-11-25: updated to React 16, React Native 0.50 and other dependencies.
+* 2017-07-30: first release.
 
 ## License
 

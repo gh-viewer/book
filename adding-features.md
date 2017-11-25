@@ -10,7 +10,7 @@ Here is the updated `HomeScreen.js` code:
 // @flow
 
 import React, { Component } from 'react'
-import { ListView, ScrollView, StyleSheet, View } from 'react-native'
+import { ScrollView, StyleSheet, View } from 'react-native'
 import { Button, Icon, List, ListItem, Text } from 'react-native-elements'
 import {
   createFragmentContainer,
@@ -36,7 +36,7 @@ type RepositoryItemProps = {
   repository: Repository,
 }
 
-const RepositoryItem = ({ navigation, repository }: RepositoryItemProps) =>
+const RepositoryItem = ({ navigation, repository }: RepositoryItemProps) => (
   <ListItem
     containerStyle={styles.itemContainer}
     title={repository.name}
@@ -49,6 +49,7 @@ const RepositoryItem = ({ navigation, repository }: RepositoryItemProps) =>
       })
     }}
   />
+)
 
 const RepositoryItemContainer = createFragmentContainer(RepositoryItem, {
   repository: graphql`
@@ -71,38 +72,17 @@ type HomeProps = {
   relay: {
     hasMore: () => boolean,
     isLoading: () => boolean,
-    loadMore: (pageSize: number) => ?Disposable,
+    loadMore: (pageSize: number, cb?: Function) => ?Disposable,
   },
   viewer: Viewer,
 }
+type HomeState = {
+  loading: boolean,
+}
 
-class Home extends Component {
-  props: HomeProps
-  state: {
-    dataSource: ListView.DataSource,
-    loading: boolean,
-  }
-
-  constructor(props: HomeProps) {
-    super(props)
-
-    const ds = new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 !== r2,
-    })
-
-    this.state = {
-      dataSource: ds.cloneWithRows(props.viewer.repositories.edges),
-      loading: false,
-    }
-  }
-
-  componentWillReceiveProps(nextProps: HomeProps) {
-    const { edges } = nextProps.viewer.repositories
-    if (edges !== this.props.viewer.repositories.edges) {
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(edges),
-      })
-    }
+class Home extends Component<HomeProps, HomeState> {
+  state = {
+    loading: false,
   }
 
   onPressLoadMore = () => {
@@ -114,49 +94,56 @@ class Home extends Component {
     }
   }
 
-  renderRow = edge =>
-    <RepositoryItemContainer
-      key={edge.node.id}
-      navigation={this.props.navigation}
-      repository={edge.node}
-    />
+  render() {
+    const { relay, viewer } = this.props
 
-  renderFooter = () => {
-    if (this.state.loading) {
+    if (
+      !viewer.repositories ||
+      !viewer.repositories.edges ||
+      viewer.repositories.edges.length === 0
+    ) {
       return (
+        <View style={sharedStyles.scene}>
+          <View style={sharedStyles.mainContents}>
+            <Text h3>No repository!</Text>
+          </View>
+        </View>
+      )
+    }
+
+    const rows = viewer.repositories.edges.map(edge => {
+      return edge && edge.node ? (
+        <RepositoryItemContainer
+          key={edge.node.id}
+          navigation={this.props.navigation}
+          repository={edge.node}
+        />
+      ) : null
+    })
+
+    let footer = null
+    if (this.state.loading) {
+      footer = (
         <View style={styles.buttonContainer}>
           <Button disabled title="Loading..." />
         </View>
       )
-    }
-    if (this.props.relay.hasMore()) {
-      return (
+    } else if (relay.hasMore()) {
+      footer = (
         <View style={styles.buttonContainer}>
           <Button onPress={this.onPressLoadMore} title="Load more" />
         </View>
       )
     }
-    return null
-  }
 
-  render() {
-    const { dataSource } = this.state
-    const contents =
-      dataSource.getRowCount() > 0
-        ? <ListView
-            dataSource={dataSource}
-            pageSize={PAGE_SIZE}
-            renderFooter={this.renderFooter}
-            renderRow={this.renderRow}
-            style={sharedStyles.scene}
-          />
-        : <View style={sharedStyles.scene}>
-            <View style={sharedStyles.mainContents}>
-              <Text h3>No repository!</Text>
-            </View>
-          </View>
-
-    return contents
+    return (
+      <ScrollView>
+        <List>
+          {rows}
+          {footer}
+        </List>
+      </ScrollView>
+    )
   }
 }
 
@@ -199,21 +186,21 @@ const HomeContainer = createPaginationContainer(
   },
 )
 
-export default class HomeScreen extends Component {
+export default class HomeScreen extends Component<{
+  navigation: Object,
+}> {
   static navigationOptions = {
     headerLeft: (
-      <Icon
-        name="repo"
-        type="octicon"
-        color="white"
-        style={sharedStyles.headerIcon}
-      />
+      <View style={sharedStyles.headerLeft}>
+        <Icon
+          name="repo"
+          type="octicon"
+          color="white"
+          style={sharedStyles.headerIcon}
+        />
+      </View>
     ),
     title: 'Repositories',
-  }
-
-  props: {
-    navigation: Object,
   }
 
   render() {
@@ -240,11 +227,7 @@ const styles = StyleSheet.create({
 })
 ```
 
-One of the main changes here is the use of [React-Native's ListView](http://facebook.github.io/react-native/releases/0.42/docs/listview.html#listview), which is now deprecated in favor of [VirtualizedList and other list components based on it](http://facebook.github.io/react-native/blog/2017/03/13/better-list-views.html). We are using ListView here because we are using React-Native v0.42, that doesn't contain VirtualizedList.
-
-Among the changes due to using ListView are the use of the [ListView.DataSource](http://facebook.github.io/react-native/releases/0.42/docs/listviewdatasource.html#listviewdatasource) in state, holding the data for each row, and the added `renderRow()` and `renderFooter()` functions provided to the rendered ListView component.
-
-The main other change is the introduction of [Relay's PaginationContainer](https://facebook.github.io/relay/docs/pagination-container.html), that will be used to paginate over the list of repositories. It provides the functions `hasMore()`, `isLoading()` an `loadMore()` in the `relay` prop, that are used in this updated `Home` component to implement the wanted behavior in the `onPressLoadMore()` and `renderFooter()` methods.
+The main change is the introduction of [Relay's PaginationContainer](https://facebook.github.io/relay/docs/pagination-container.html), that will be used to paginate over the list of repositories. It provides the functions `hasMore()`, `isLoading()` an `loadMore()` in the `relay` prop, that are used in this updated `Home` component to implement the wanted behavior in the `onPressLoadMore()` method and the footer logic.
 
 We are also going to update the `RepositoryScreen.js` file, with the following contents:
 
@@ -289,14 +272,14 @@ const RemoveStarMutation = graphql`
   }
 `
 
-class Repository extends Component {
+type Props = {
+  navigation: Object,
+  repository: RepositoryType,
+}
+
+class Repository extends Component<Props> {
   static contextTypes = {
     environment: EnvironmentPropType.isRequired,
-  }
-
-  props: {
-    navigation: Object,
-    repository: RepositoryType,
   }
 
   onPressParent = () => {
@@ -354,13 +337,11 @@ class Repository extends Component {
   render() {
     const { repository } = this.props
 
-    const description = repository.description
-      ? <View style={sharedStyles.mainContents}>
-          <Text h5>
-            {repository.description}
-          </Text>
-        </View>
-      : null
+    const description = repository.description ? (
+      <View style={sharedStyles.mainContents}>
+        <Text h5>{repository.description}</Text>
+      </View>
+    ) : null
 
     const starCount = repository.stargazers.totalCount
 
@@ -412,9 +393,7 @@ class Repository extends Component {
     return (
       <ScrollView style={sharedStyles.scene}>
         {description}
-        <List containerStyle={styles.listContainer}>
-          {items}
-        </List>
+        <List containerStyle={styles.listContainer}>{items}</List>
       </ScrollView>
     )
   }
@@ -443,17 +422,21 @@ const RepositoryContainer = createFragmentContainer(Repository, {
   `,
 })
 
-export default class RepositoryScreen extends Component {
+export default class RepositoryScreen extends Component<{
+  navigation: Object,
+}> {
   static navigationOptions = ({ navigation }: Object) => ({
     headerLeft: (
-      <Icon
-        name="chevron-left"
-        type="octicon"
-        color="white"
-        underlayColor="black"
-        onPress={() => navigation.goBack()}
-        style={sharedStyles.headerIcon}
-      />
+      <View style={sharedStyles.headerLeft}>
+        <Icon
+          name="chevron-left"
+          type="octicon"
+          color="white"
+          underlayColor="black"
+          onPress={() => navigation.goBack()}
+          style={sharedStyles.headerIcon}
+        />
+      </View>
     ),
     title: navigation.state.params.name,
   })
