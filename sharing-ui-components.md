@@ -7,7 +7,7 @@ First, let's add some dependencies to simplify building our UI. We will use [Rea
 React Native Elements also requires [React Native Vector Icons](https://github.com/oblador/react-native-vector-icons) to display icons, so we will install it as well.
 
 ```bash
-yarn add react-native-elements@^0.15.0 react-native-vector-icons@^4.2.0
+yarn add react-native-elements@^0.18.4 react-native-vector-icons@^4.4.2
 ```
 
 ### Mobile setup
@@ -19,7 +19,7 @@ React Native Vector Icons requires native dependencies and provides fonts that n
 In order to makes these libraries work on desktop, we'll first need to add an extra loader for webpack:
 
 ```bash
-yarn add --dev file-loader@^0.11.2
+yarn add --dev file-loader@^1.1.5
 ```
 
 and add update the `module.rules` array of our `webpack.config.js` to compile these libraries and add support for binary assets:
@@ -28,7 +28,7 @@ and add update the `module.rules` array of our `webpack.config.js` to compile th
 rules: [
   {
     test: /\.js$/,
-    exclude: /node_modules\/(?!react-native-(elements|side-menu|tab-navigator|vector-icons)\/).*/,
+    exclude: /react-native-web/,
     loader: 'babel-loader',
   },
   {
@@ -125,7 +125,7 @@ export default class HomeScreen extends Component {
 }
 ```
 
-Finally, let's edit the `index.android.js` and `index.ios.js` files to have the following contents:
+Finally, let's edit the `index.js` file to have the following contents:
 
 ```js
 import { AppRegistry } from 'react-native'

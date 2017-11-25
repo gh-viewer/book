@@ -95,7 +95,7 @@ To achieve it, we'll use [Redux](http://redux.js.org/) and [Redux Persist](https
 Let's add these libraries to the project:
 
 ```bash
-yarn add react-redux@^5.0.5 redux@^3.7.2 redux-persist@^4.8.2
+yarn add react-redux@^5.0.6 redux@^3.7.2 redux-persist@^5.4.0
 ```
 
 #### Creating the store
@@ -106,8 +106,8 @@ Now let's setup our application store with persistence, by creating a `Store.js`
 // @flow
 
 import { AsyncStorage } from 'react-native'
-import { combineReducers, createStore } from 'redux'
-import { createPersistor, getStoredState } from 'redux-persist'
+import { createStore } from 'redux'
+import { persistStore, persistCombineReducers } from 'redux-persist'
 
 export type Action =
   | {
@@ -121,20 +121,7 @@ export type Action =
       },
     }
 
-const persistConfig = { storage: AsyncStorage }
-
-const getInitialState = (): Promise<Object> => {
-  return new Promise(resolve => {
-    getStoredState(persistConfig, (err, state) => {
-      if (err) {
-        console.warn('Failed to get stored state', err)
-        resolve({})
-      } else {
-        resolve(state)
-      }
-    })
-  })
-}
+const persistConfig = { key: 'ghv', storage: AsyncStorage }
 
 const authReducer = (state = null, action: Action) => {
   switch (action.type) {
@@ -147,22 +134,20 @@ const authReducer = (state = null, action: Action) => {
   }
 }
 
-const reducer = combineReducers({ auth: authReducer })
+const reducer = persistCombineReducers(persistConfig, { auth: authReducer })
 
-export const create = async () => {
-  const store = createStore(reducer, await getInitialState())
-  createPersistor(store, persistConfig)
-  return store
-}
+export const store = createStore(reducer)
+
+export const persistor = persistStore(store)
 ```
 
 As you can notice, we'll use Flow in this module to define some types. It is convenient when working with Redux to make sure the actions payloads are properly defined and handled.
 
-In order to store the application state, we use Redux-Persist and configure it to use the `AsyncStorage` API provided by React Native and React Native for Web. The `getInitialState()` function will try to get the existing state from storage, or return an empty Object.
+In order to store the application state, we use Redux-Persist and configure it to use the `AsyncStorage` API provided by React Native and React Native for Web.
 
 The `authReducer()` will handle the authentication actions to update the store, and is part of the main `reducer`. This is not really necessary at this point as we only have one reducer, but namespacing the auth state like this is convenient to avoid more refactoring than necessary once we add more unrelated data to the state.
 
-Finally, this module exports a `create()` function that will create the store using the initial state, and persist it.
+Finally, this module creates and exports the `store` and `persistor` objects that will be used by the application.
 
 #### Providing the state to React components
 
@@ -193,38 +178,30 @@ Now let's create a `StoreProvider.js` file in the `src/component` folder, with t
 ```js
 // @flow
 
-import React, { Component, type Element } from 'react'
+import React, { Component, type Node } from 'react'
 import { Provider } from 'react-redux'
+import { PersistGate } from 'redux-persist/es/integration/react'
 
-import { create } from '../Store'
+import { persistor, store } from '../Store'
 
 import ScreenLoader from './ScreenLoader'
 
-export default class StoreProvider extends Component {
-  props: {
-    children?: Element<*>,
-  }
-  state: {
-    store?: Object,
-  } = {}
-
-  componentDidMount() {
-    this.createStore()
-  }
-
-  async createStore() {
-    this.setState({ store: await create() })
-  }
-
-  render() {
-    return this.state.store
-      ? <Provider store={this.state.store}>{this.props.children}</Provider>
-      : <ScreenLoader />
-  }
+type Props = {
+  children?: Node,
 }
+
+const StoreProvider = ({ children }: Props) => (
+  <Provider store={store}>
+    <PersistGate loading={<ScreenLoader />} persistor={persistor}>
+      {children}
+    </PersistGate>
+  </Provider>
+)
+
+export default StoreProvider
 ```
 
-In this module, we use the `Provider` component from React Redux to inject our application's store. Because creating the store is asynchronous, we display the `ScreenLoader` until the store is available.
+In this module, we use the `Provider` component from React Redux to inject our application's store, and the `PersistGate` component from Redux Persist to display the `ScreenLoader` until the store is available.
 
 ### Setting up the app's authentication flow
 
@@ -279,7 +256,7 @@ Now let's create a create a new file, `EnvironmentProvider.js`, in the `src/comp
 ```js
 // @flow
 
-import React, { Component, type Element } from 'react'
+import React, { Component, type Node } from 'react'
 import { StyleSheet, View, WebView } from 'react-native'
 import { Button, Text } from 'react-native-elements'
 import { connect } from 'react-redux'
@@ -299,22 +276,20 @@ type NavigationState = {
 }
 type Props = {
   access_token: ?string,
-  children: Element<*>,
+  children: Node,
   dispatch: (action: Action) => void,
+}
+type State = {
+  auth: AuthState,
+  environment: ?Environment,
 }
 
 // Edit here if you want to use your own authentication server
 const AUTH_SERVER = 'ghviewer.herokuapp.com'
 
-class EnvironmentProvider extends Component {
+class EnvironmentProvider extends Component<Props, State> {
   static childContextTypes = {
     environment: EnvironmentPropType,
-  }
-
-  props: Props
-  state: {
-    auth: AuthState,
-    environment: ?Environment,
   }
 
   constructor(props: Props) {
@@ -385,7 +360,9 @@ class EnvironmentProvider extends Component {
       return (
         <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
           <View style={sharedStyles.mainContents}>
-            <Text h3 style={styles.title}>Welcome to GH Viewer!</Text>
+            <Text h3 style={styles.title}>
+              Welcome to GH Viewer!
+            </Text>
             <Text style={styles.contents}>
               In order to use this application, you need to authorize it to
               access some of your GitHub data
@@ -469,7 +446,7 @@ type QueryErrorProps = {
   error: Error,
   retry: () => void,
 }
-const QueryError = ({ error, retry }: QueryErrorProps) =>
+const QueryError = ({ error, retry }: QueryErrorProps) => (
   <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
     <View style={sharedStyles.mainContents}>
       <Text h2 style={sharedStyles.textCenter}>
@@ -480,13 +457,14 @@ const QueryError = ({ error, retry }: QueryErrorProps) =>
       <Button onPress={retry} title="Retry" />
     </View>
   </View>
+)
 
 type HomeProps = {
   viewer: {
     login: string,
   },
 }
-const Home = ({ viewer }: HomeProps) =>
+const Home = ({ viewer }: HomeProps) => (
   <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
     <View style={sharedStyles.mainContents}>
       <Icon name="octoface" size={60} type="octicon" />
@@ -495,6 +473,7 @@ const Home = ({ viewer }: HomeProps) =>
       </Text>
     </View>
   </View>
+)
 
 export default class HomeScreen extends Component {
   static contextTypes = {
@@ -536,17 +515,18 @@ import EnvironmentProvider from './EnvironmentProvider'
 import StoreProvider from './StoreProvider'
 import HomeScreen from './HomeScreen'
 
-const App = () =>
+const App = () => (
   <StoreProvider>
     <EnvironmentProvider>
       <HomeScreen />
     </EnvironmentProvider>
   </StoreProvider>
+)
 
 export default App
 ```
 
-The final task is then simply to replace the component import in `index.android.js`, `index.ios.js` and `index.web.js` files from:
+The final task is then simply to replace the component import in the `index.js` and `index.web.js` files from:
 
 ```js
 import GHViewer from './src/components/HomeScreen'

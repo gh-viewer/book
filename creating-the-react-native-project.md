@@ -4,9 +4,9 @@
 
 The first step in this guide will be to create the React-Native project, following the [steps from the official React Native documentation](https://facebook.github.io/react-native/releases/0.42/docs/getting-started.html).
 
-One important thing that will have to be done differently is to install version 0.42 of React Native rather than the latest one. The reason for this is that starting from version 0.43, React Native uses React 16, but the React Native for Web library that we will also use in this project is only compatible with React 15 at the time of this writing. This is likely to change in the coming weeks or months as [React 16 support in React Native for Web is being worked on](https://github.com/necolas/react-native-web/issues/364).
+One important thing that will have to be done differently is to install version 0.50 of React Native, as this is the one used ofr this guide. More recent versions might work as well, but you should use 0.50 if you want to be able to follow this guide without issue.
 
-To create the project using React Native 0.42, replace this command from React-Native's getting started guide:
+To create the project using React Native 0.50, replace this command from React-Native's getting started guide:
 
 ```bash
 react-native init AwesomeProject
@@ -15,7 +15,7 @@ react-native init AwesomeProject
 by
 
 ```bash
-react-native init --version 0.42.3 AwesomeProject
+react-native init --version 0.50.4 AwesomeProject
 ```
 
 Then follow the other steps from the guide, that should end with having your app running on Android and iOS.
@@ -31,10 +31,10 @@ If you're interested in static typing, you may want to check out [TypeScript](ht
 If you are using the [Nuclide IDE](https://nuclide.io/), chances are it will detect your created project is using Flow and ask for the binary, if so you can add it to your project using the following command:
 
 ```bash
-yarn add --dev flow-bin@^0.38.0
+yarn add --dev flow-bin@^0.56.0
 ```
 
-Note that we are using version `0.38` here because it is the one supported by React-Native `0.42`.
+Note that we are using version `0.56` here because it is the one supported by React-Native `0.50`.
 
 Hopefully by now you have successfully setup your React Native project and are able to run you app for Android and iOS, so let's move on to the next chapter in order to add desktop support .
 

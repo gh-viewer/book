@@ -7,13 +7,13 @@ In order to use the same APIs for desktop as we do for mobile, we will leverage 
 Let's start by running the following command to install these dependencies. Other versions than the ones provided below may work as well, but these versions should ensure there are no incompatibilities between these libraries:
 
 ```bash
-yarn add babel-regenerator-runtime@^6.5.0 electron@~1.6.11 react-dom@~15.4.2 react-native-web@^0.0.113 react-native-electron@^0.0.17
+yarn add babel-regenerator-runtime@^6.5.0 electron@~1.7.9 react-dom@16.0.0 react-native-web@^0.1.14 react-native-electron@^0.1.1
 ```
 
 We will also need some more tooling in order to run the desktop app, starting by installing the following dependencies:
 
 ```bash
-yarn add --dev babel-loader@^7.1.1 webpack@^3.4.1 webpack-dev-server@^2.6.1
+yarn add --dev babel-loader@^7.1.2 webpack@^3.8.1 webpack-dev-server@^2.9.4
 ```
 
 ### The UI entry point
@@ -56,7 +56,7 @@ AppRegistry.runApplication('GHViewer', {
 })
 ```
 
-This is essentially the same code a the one generated in `index.android.js` and `index.ios.js`, with the difference in the last line that we have to run the application by providing the DOM node to render it.
+This is essentially the same code a the one generated in `index.js`, with the difference in the last line that we have to run the application by providing the DOM node to render it.
 
 You may notice that we are loading the `AppRegistry` and other APIs from the `react-native` library. This is not a mistake, but on the contrary what allows us to create cross-platform components without having to think much about it. We will see later in this chapter how this is achieved.
 
@@ -144,7 +144,7 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        exclude: /react-native-web/,
         loader: 'babel-loader',
       },
     ],

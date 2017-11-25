@@ -3,23 +3,13 @@
 By now we are able to authenticate the user and retrieve her GitHub information, so we can start creating more screens to display the data. First, let's add the [React Navigation](https://reactnavigation.org/) library to handle navigation in the app:
 
 ```bash
-yarn add react-navigation@1.0.0-beta.11
+yarn add react-navigation@1.0.0-beta.21
 ```
 
 We will need to update our `webpack.config.js` file again by adding an entry to `resolve.alias`, as we previously did to alias `react-native` to `react-native-electron` for the desktop app:
 
 ```js
 'react-navigation': 'react-navigation/lib-rn/react-navigation.js',
-```
-
-We need to create this alias because React Navigation also has browser support, but in our case we want to use the React Native APIs, so we also need to update the `module.rules` to compile it using Babel:
-
-```js
-{
-  test: /\.js$/,
-  exclude: /node_modules\/(?!react-native-(elements|side-menu|tab-navigator|tab-view|vector-icons)|react-navigation\/).*/,
-  loader: 'babel-loader',
-},
 ```
 
 Now let's create a `Navigation.js` file in `src/components`, with the following contents:
@@ -56,12 +46,13 @@ import EnvironmentProvider from './EnvironmentProvider'
 import StoreProvider from './StoreProvider'
 import Navigation from './Navigation'
 
-const App = () =>
+const App = () => (
   <StoreProvider>
     <EnvironmentProvider>
       <Navigation />
     </EnvironmentProvider>
   </StoreProvider>
+)
 
 export default App
 ```
@@ -71,7 +62,7 @@ We are also going to use Relay's `QueryRenderer` component and the loading logic
 ```js
 // @flow
 
-import React, { Component, createElement } from 'react'
+import React, { Component, createElement, type ComponentType } from 'react'
 import { NetInfo, View } from 'react-native'
 import { Button, Icon, Text } from 'react-native-elements'
 import { QueryRenderer } from 'react-relay'
@@ -85,12 +76,11 @@ type QueryErrorProps = {
   error: Error,
   retry: () => void,
 }
+type QueryErrorState = {
+  waitingNetwork: boolean,
+}
 
-class QueryError extends Component {
-  props: QueryErrorProps
-  state: {
-    waitingNetwork: boolean,
-  }
+class QueryError extends Component<QueryErrorProps, QueryErrorState> {
   connectionListener: ?{
     remove: () => void,
   }
@@ -124,37 +114,39 @@ class QueryError extends Component {
   }
 
   render() {
-    return this.state.waitingNetwork
-      ? <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
-          <View style={sharedStyles.mainContents}>
-            <Text h3 style={sharedStyles.textCenter}>
-              Waiting for network...
-            </Text>
-          </View>
+    return this.state.waitingNetwork ? (
+      <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
+        <View style={sharedStyles.mainContents}>
+          <Text h3 style={sharedStyles.textCenter}>
+            Waiting for network...
+          </Text>
         </View>
-      : <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
-          <View style={sharedStyles.mainContents}>
-            <Text h3 style={sharedStyles.textCenter}>
-              {this.props.error.message || 'Request failed'}
-            </Text>
-          </View>
-          <View style={sharedStyles.bottomContents}>
-            <Button onPress={this.props.retry} title="Retry" />
-          </View>
+      </View>
+    ) : (
+      <View style={[sharedStyles.scene, sharedStyles.centerContents]}>
+        <View style={sharedStyles.mainContents}>
+          <Text h3 style={sharedStyles.textCenter}>
+            {this.props.error.message || 'Request failed'}
+          </Text>
         </View>
+        <View style={sharedStyles.bottomContents}>
+          <Button onPress={this.props.retry} title="Retry" />
+        </View>
+      </View>
+    )
   }
 }
 
-export default class ScreenRenderer extends Component {
+type ScreenRendererProps = {
+  container: ComponentType<any>,
+  navigation: Object,
+  query: mixed,
+  variables?: Object,
+}
+
+export default class ScreenRenderer extends Component<ScreenRendererProps> {
   static contextTypes = {
     environment: EnvironmentPropType.isRequired,
-  }
-
-  props: {
-    container: Component<*, *, *>,
-    navigation: Object,
-    query: mixed,
-    variables?: Object,
   }
 
   render() {
@@ -185,12 +177,15 @@ As you can see, we add a bit of logic in the `QueryError` component in order to 
 
 The `ScreenRenderer` in itself simply renders Relay's `QueryRenderer` using the environment it gets from the context, so that components using `ScreenRenderer` don't need to care about it. These components will need to provide the GraphQL `query` and the `container` component to render, as well as the `navigation` if needed by the `container`, and the `variables` used by the `query`.
 
-We'll also update the `styles.js` file to add an extra style we'll use for navigation:
+We'll also update the `styles.js` file to add an extra styles we'll use for navigation:
 
 ```js
 headerIcon: {
   paddingHorizontal: 15,
   paddingVertical: 5,
+},
+headerLeft: {
+  width: 50,
 },
 ```
 
@@ -215,7 +210,7 @@ type RepositoryItemProps = {
   repository: Repository,
 }
 
-const RepositoryItem = ({ navigation, repository }: RepositoryItemProps) =>
+const RepositoryItem = ({ navigation, repository }: RepositoryItemProps) => (
   <ListItem
     title={repository.name}
     subtitle={repository.owner.isViewer ? null : repository.owner.login}
@@ -227,6 +222,7 @@ const RepositoryItem = ({ navigation, repository }: RepositoryItemProps) =>
       })
     }}
   />
+)
 
 const RepositoryItemContainer = createFragmentContainer(RepositoryItem, {
   repository: graphql`
@@ -250,17 +246,19 @@ type HomeProps = {
 }
 
 const Home = ({ navigation, viewer }: HomeProps) => {
-  const repositories = viewer.repositories.nodes.length
-    ? viewer.repositories.nodes.map(r =>
+  const repositories = viewer.repositories.nodes.length ? (
+      viewer.repositories.nodes.map(r => (
         <RepositoryItemContainer
           key={r.id}
           navigation={navigation}
           repository={r}
-        />,
-      )
-    : <View style={sharedStyles.mainContents}>
+        />
+      ))
+    ) : (
+      <View style={sharedStyles.mainContents}>
         <Text h3>No repository!</Text>
       </View>
+    )
 
   return <ScrollView style={sharedStyles.scene}>{repositories}</ScrollView>
 }
@@ -270,10 +268,7 @@ const HomeContainer = createFragmentContainer(Home, {
     fragment HomeScreen_viewer on User {
       repositories (
         first: 10
-        orderBy: {
-          field: UPDATED_AT,
-          direction: DESC,
-        }
+        orderBy: { field: UPDATED_AT, direction: DESC }
       ) {
         nodes {
           ...HomeScreen_repository
@@ -287,12 +282,14 @@ const HomeContainer = createFragmentContainer(Home, {
 export default class HomeScreen extends Component {
   static navigationOptions = {
     headerLeft: (
-      <Icon
-        name="repo"
-        type="octicon"
-        color="white"
-        style={sharedStyles.headerIcon}
-      />
+      <View style={sharedStyles.headerLeft}>
+        <Icon
+          name="repo"
+          type="octicon"
+          color="white"
+          style={sharedStyles.headerIcon}
+        />
+      </View>
     ),
     title: 'Repositories',
   }

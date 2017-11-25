@@ -13,8 +13,8 @@ You will be asked for your password, a descriptions of the token \(put anything 
 Now let's add [Relay](https://facebook.github.io/relay/) and related tooling to our app:
 
 ```bash
-yarn add prop-types@^15.0.0 react-relay@^1.1.0 relay-runtime@^1.1.0
-yarn add --dev babel-plugin-relay@^1.1.0 graphql-fetch-schema@^0.6.1 relay-compiler@^1.1.0
+yarn add prop-types@^15.6.0 react-relay@^1.4.1 relay-runtime@^1.4.1
+yarn add --dev babel-plugin-relay@^1.4.1 graphql-fetch-schema@^0.7.1 relay-compiler@^1.4.1
 ```
 
 Also add the following `scripts` to your `package.json`:
