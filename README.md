@@ -6,7 +6,7 @@ Both the [client app](https://github.com/gh-viewer/client) and [authentication s
 
 ## Disclaimer
 
-This is not a "definitive guide", "starter template" or any other kind of "best practices", but rather a \(hopefully\) simple introduction to some of the technologies that can be used to build this kind of project with straight-forward code examples, based on the experience I have had building the [Mainframe client](https://mainframe.com/) with the rest of the team, so please don't see it at anything else than one possible way to do things among many others.
+This is not a "definitive guide", "starter template" or any other kind of "best practices", but rather a \(hopefully\) simple introduction to some of the technologies that can be used to build this kind of project with straight-forward code examples, so please don't see it at anything else than one possible way to do things among many others.
 
 Most of the libraries presented in this guide are chosen either because these are the ones used at Mainframe or in other projects, or I was just curious about, so it's not about "one being better than another". It doesn't matter if you prefer TypeScript instead of Flow, MobX instead of Redux or any other library you may want to use, as long as they are the tools to suit you and your team the best, please adapt this guide to your needs!
 
@@ -22,6 +22,7 @@ All contributions must be made using the license already used \(CC BY-NC-SA 4.0 
 
 ## History
 
+* 2018-01: updated to React-Native 0.52 and other dependencies.
 * 2017-11-25: updated to React 16, React Native 0.50 and other dependencies.
 * 2017-07-30: first release.
 

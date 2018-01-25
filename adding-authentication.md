@@ -95,7 +95,7 @@ To achieve it, we'll use [Redux](http://redux.js.org/) and [Redux Persist](https
 Let's add these libraries to the project:
 
 ```bash
-yarn add react-redux@^5.0.6 redux@^3.7.2 redux-persist@^5.4.0
+yarn add react-redux@^5.0.6 redux@^3.7.2 redux-persist@^5.5.0
 ```
 
 #### Creating the store

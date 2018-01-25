@@ -7,13 +7,13 @@ In order to use the same APIs for desktop as we do for mobile, we will leverage 
 Let's start by running the following command to install these dependencies. Other versions than the ones provided below may work as well, but these versions should ensure there are no incompatibilities between these libraries:
 
 ```bash
-yarn add babel-regenerator-runtime@^6.5.0 electron@~1.7.9 react-dom@16.0.0 react-native-web@^0.1.14 react-native-electron@^0.1.1
+yarn add babel-regenerator-runtime@^6.5.0 electron@~1.7.11 react-dom@16.2.0 react-native-web@^0.3.2 react-native-electron@^0.3.0
 ```
 
 We will also need some more tooling in order to run the desktop app, starting by installing the following dependencies:
 
 ```bash
-yarn add --dev babel-loader@^7.1.2 webpack@^3.8.1 webpack-dev-server@^2.9.4
+yarn add --dev babel-loader@^7.1.2 webpack@^3.10.0 webpack-dev-server@^2.11.1
 ```
 
 ### The UI entry point

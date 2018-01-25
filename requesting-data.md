@@ -14,7 +14,7 @@ Now let's add [Relay](https://facebook.github.io/relay/) and related tooling to 
 
 ```bash
 yarn add prop-types@^15.6.0 react-relay@^1.4.1 relay-runtime@^1.4.1
-yarn add --dev babel-plugin-relay@^1.4.1 graphql-fetch-schema@^0.7.1 relay-compiler@^1.4.1
+yarn add --dev babel-plugin-relay@^1.4.1 graphql-fetch-schema@^0.7.2 relay-compiler@^1.4.1
 ```
 
 Also add the following `scripts` to your `package.json`:

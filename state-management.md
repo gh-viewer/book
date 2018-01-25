@@ -3,7 +3,7 @@
 By now we are able to authenticate the user and retrieve her GitHub information, so we can start creating more screens to display the data. First, let's add the [React Navigation](https://reactnavigation.org/) library to handle navigation in the app:
 
 ```bash
-yarn add react-navigation@1.0.0-beta.21
+yarn add react-navigation@1.0.0-beta.26
 ```
 
 We will need to update our `webpack.config.js` file again by adding an entry to `resolve.alias`, as we previously did to alias `react-native` to `react-native-electron` for the desktop app:
