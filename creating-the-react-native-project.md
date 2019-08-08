@@ -28,14 +28,6 @@ This guide will sometimes use Flow types in order to give a better idea of expec
 
 If you're interested in static typing, you may want to check out [TypeScript](https://www.typescriptlang.org/), by Microsoft. This guide uses Flow rather than TypeScript as a convenience to only opt-in for static types in certain cases rather than adapting the entire environment to a different source language.
 
-If you are using the [Nuclide IDE](https://nuclide.io/), chances are it will detect your created project is using Flow and ask for the binary, if so you can add it to your project using the following command:
-
-```bash
-yarn add --dev flow-bin@^0.61.0
-```
-
-Note that we are using version `0.61` here because it is the one supported by React-Native `0.52`.
-
 Hopefully by now you have successfully setup your React Native project and are able to run you app for Android and iOS, so let's move on to the next chapter in order to add desktop support .
 
 ### Related resources
