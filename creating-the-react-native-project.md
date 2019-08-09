@@ -2,7 +2,7 @@
 
 [React Native](http://facebook.github.io/react-native/) is a framework built by Facebook to create native Android and iOS apps using JavaScript and React.
 
-The first step in this guide will be to create the React-Native project, following the [steps from the official React Native documentation](https://facebook.github.io/react-native/releases/0.42/docs/getting-started.html).
+The first step in this guide will be to create the React-Native project, following the [steps from the official React Native documentation](https://facebook.github.io/react-native/docs/getting-started).
 
 One important thing that will have to be done differently is to install version 0.52 of React Native, as this is the one used ofr this guide. More recent versions might work as well, but you should use 0.52 if you want to be able to follow this guide without issue.
 
